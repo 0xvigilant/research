@@ -6,7 +6,7 @@ Reports follow a consistent methodology: competitor mapping, technical-architect
 
 ## Reports
 
-- **[fileverse](projects/fileverse/)** (2026-04-27) — [end-to-end encrypted productivity suite with IPFS persistence and Ethereum/Gnosis content registry](https://fileverse.io). [Read report →](https://{{GH_USER}}.github.io/research/projects/fileverse/)
+- **[fileverse](projects/fileverse/)** (2026-04-27) — [end-to-end encrypted productivity suite with IPFS persistence and Ethereum/Gnosis content registry](https://fileverse.io). [Read report →](https://0xvigilant.github.io/research/projects/fileverse/)
 
 ## Methodology
 
