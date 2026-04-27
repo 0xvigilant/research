@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fileverse — Research Report</title>
+<meta name="description" content="Fileverse is an open-source, end-to-end encrypted productivity suite combining a local-first dDocs editor, an onchain-aware dSheets, and multi-provider IPFS persistence with an Ethereum/Gnosis content registry." />
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #0f172a;
+    --paper: #fafaf7;
+    --rule: #e5e7eb;
+    --accent: #1d4ed8;
+    --muted: #475569;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .prose-body {
+    font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    max-width: 65ch;
+    color: #1e293b;
+  }
+  .prose-body p { margin-bottom: 1.1rem; }
+  .prose-body h3 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1.15rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--ink);
+  }
+  .prose-body h4 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--ink);
+  }
+  .prose-body strong { color: var(--ink); font-weight: 600; }
+  .cite {
+    font-size: 0.7em;
+    vertical-align: super;
+    line-height: 0;
+    color: var(--accent);
+    text-decoration: none;
+    margin-left: 1px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+  .cite:hover { text-decoration: underline; }
+  .toc-link {
+    display: block;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+    color: #475569;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .toc-link:hover { color: var(--accent); border-left-color: var(--accent); background: #f1f5f9; }
+  section { scroll-margin-top: 80px; }
+  .section-rule {
+    height: 1px;
+    background: linear-gradient(90deg, var(--rule) 0%, transparent 100%);
+    margin: 3rem 0 2rem 0;
+  }
+  table.matrix {
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+  table.matrix th, table.matrix td {
+    padding: 0.55rem 0.65rem;
+    border: 1px solid #e2e8f0;
+    vertical-align: top;
+    text-align: left;
+  }
+  table.matrix thead th {
+    background: #f1f5f9;
+    font-weight: 600;
+    color: var(--ink);
+    position: sticky;
+    top: 0;
+  }
+  table.matrix tbody td:first-child {
+    background: #f8fafc;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  table.matrix tbody tr:hover td { background: #fefce8; }
+  .finding-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid var(--accent);
+    border-radius: 0.5rem;
+    padding: 1.25rem 1.5rem;
+    transition: box-shadow 0.15s;
+  }
+  .finding-card:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.06); }
+  .finding-num {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .references-list { font-size: 0.85rem; line-height: 1.6; }
+  .references-list li { margin-bottom: 0.5rem; padding-left: 0.25rem; }
+  .references-list a { color: var(--accent); word-break: break-word; }
+  .references-list a:hover { text-decoration: underline; }
+  .scenario-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+  }
+  .scenario-card h4 { font-family: 'Inter', sans-serif; font-weight: 600; margin-top: 0; }
+  @media (max-width: 1024px) {
+    aside.toc { display: none; }
+  }
+</style>
+</head>
+<body class="antialiased">
+
+<!-- Top bar -->
+<header class="border-b border-slate-200 bg-white sticky top-0 z-30">
+  <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between text-sm">
+    <div class="flex items-center gap-3 text-slate-700">
+      <span class="font-semibold text-slate-900">Fileverse</span>
+      <span class="text-slate-400">·</span>
+      <span>Research Report</span>
+    </div>
+    <div class="flex items-center gap-3 text-slate-500">
+      <span>Data cutoff</span>
+      <span class="font-medium text-slate-700">2026-04-27</span>
+    </div>
+  </div>
+</header>
+
+<div class="max-w-7xl mx-auto px-6 py-10 flex gap-10">
+
+  <!-- Sticky TOC -->
+  <aside class="toc w-56 shrink-0 sticky top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto">
+    <div class="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-3 px-2">Contents</div>
+    <nav>
+      <a class="toc-link" href="#abstract">1. Abstract</a>
+      <a class="toc-link" href="#findings">2. Key Findings</a>
+      <a class="toc-link" href="#background">3. Background</a>
+      <a class="toc-link" href="#mechanism">4. Mechanism</a>
+      <a class="toc-link" href="#landscape">5. Landscape</a>
+      <a class="toc-link" href="#economics">6. Economics</a>
+      <a class="toc-link" href="#open-questions">7. Open Questions</a>
+      <a class="toc-link" href="#outlook">8. Outlook</a>
+      <a class="toc-link" href="#methodology">Methodology</a>
+      <a class="toc-link" href="#references">References</a>
+    </nav>
+  </aside>
+
+  <!-- Main column -->
+  <main class="flex-1 min-w-0">
+
+    <!-- Hero -->
+    <section class="mb-12">
+      <div class="bg-white border border-slate-200 rounded-xl p-8 md:p-10">
+        <div class="text-xs uppercase tracking-widest text-blue-700 font-semibold mb-3">Independent Research · Phase 4</div>
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-900 leading-tight mb-4">Fileverse</h1>
+        <p class="text-lg md:text-xl text-slate-700 leading-relaxed max-w-3xl">
+          An open-source, end-to-end encrypted productivity suite combining a local-first dDocs editor, an onchain-aware dSheets, and a multi-provider IPFS persistence layer anchored by an Ethereum/Gnosis content registry.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+          <div><span class="text-slate-400">Data cutoff</span> <span class="font-medium text-slate-800">2026-04-27</span></div>
+          <div><span class="text-slate-400">Mode</span> <span class="font-medium text-slate-800">Researcher portfolio</span></div>
+          <div><span class="text-slate-400">Sources</span> <span class="font-medium text-slate-800">53 cited</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Findings -->
+    <section id="findings" class="mb-16">
+      <div class="flex items-baseline gap-3 mb-6">
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 2</span>
+        <h2 class="text-2xl font-bold text-slate-900">Key Findings</h2>
+      </div>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="finding-card">
+          <div class="finding-num mb-2">Finding 01</div>
+          <p class="font-semibold text-slate-900 mb-2">Decentralization-by-default of persistence, not encryption, is the most differentiated property.</p>
+          <p class="text-sm text-slate-600">Multi-provider IPFS pinning plus an Ethereum/Gnosis content registry, paired with AGPL-3.0 licensing<a class="cite" href="#ref-4">[4]</a>, makes the codebase portable beyond the operating entity — a structural answer to the Skiff sunset failure mode<a class="cite" href="#ref-8">[8]</a>.</p>
+        </div>
+        <div class="finding-card">
+          <div class="finding-num mb-2">Finding 02</div>
+          <p class="font-semibold text-slate-900 mb-2">The model is structurally subsidy-dependent until ~100,000 paying users.</p>
+          <p class="text-sm text-slate-600">That threshold is roughly an order of magnitude above CryptPad's published 5,000 paying subscribers across ~280,000 registered after a decade of operation<a class="cite" href="#ref-9">[9]</a>. This is the report's primary falsifiable claim.</p>
+        </div>
+        <div class="finding-card">
+          <div class="finding-num mb-2">Finding 03</div>
+          <p class="font-semibold text-slate-900 mb-2">Link Lock URL-fragment design is the highest-severity attack surface specific to the architecture.</p>
+          <p class="text-sm text-slate-600">The 2018 ENS Lyon analysis of CryptPad-style URL-fragment key sharing<a class="cite" href="#ref-10">[10]</a> documents the leakage paths; the same vector applies to Fileverse, modelled at ~3% silent confidentiality breach across share-heavy corpora.</p>
+        </div>
+        <div class="finding-card">
+          <div class="finding-num mb-2">Finding 04</div>
+          <p class="font-semibold text-slate-900 mb-2">Ethereum-mainnet registry default is misaligned with the document-heavy write pattern.</p>
+          <p class="text-sm text-slate-600">Per-document anchoring costs run $1–$10+ at observed mainnet gas prices<a class="cite" href="#ref-11">[11]</a>; Gnosis Chain is the technically appropriate default and is already referenced in the collaboration-server<a class="cite" href="#ref-2">[2]</a>.</p>
+        </div>
+        <div class="finding-card md:col-span-2">
+          <div class="finding-num mb-2">Finding 05</div>
+          <p class="font-semibold text-slate-900 mb-2">The cryptographic stack is incompletely audited as of the data cutoff.</p>
+          <p class="text-sm text-slate-600">Only the collaboration-server is under Dedalo audit<a class="cite" href="#ref-2">[2]</a>; the <code>@fileverse/crypto</code> library implementing the triple-lock walk-away scheme has no public audit report. Per Trail of Bits' guidance<a class="cite" href="#ref-12">[12]</a>, cryptographic primitives warrant audits at least every 18 months — this is the cleanest production-readiness gap.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Abstract -->
+    <section id="abstract" class="mb-16">
+      <div class="flex items-baseline gap-3 mb-6">
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 1</span>
+        <h2 class="text-2xl font-bold text-slate-900">Abstract</h2>
+      </div>
+      <article class="prose-body">
+        <p>Fileverse is an open-source, end-to-end encrypted productivity suite that combines a local-first collaborative document editor (dDocs), an onchain-aware spreadsheet (dSheets), and a multi-provider IPFS persistence layer with an Ethereum/Gnosis content registry. Files are encrypted client-side with per-file AES keys; those keys are wrapped under three independent locks — Portal, Owner, and Link — described in the project's walk-away repository<a class="cite" href="#ref-1">[1]</a>, enabling operator-independent recovery.</p>
+        <p>Real-time collaboration runs through a stateless WebSocket relay<a class="cite" href="#ref-2">[2]</a> that handles only ciphertext, while persistence is mediated by <code>fileverse-storage-v2</code>, which fans out pin requests across Pinata, Filebase, and Web3.Storage / Storacha<a class="cite" href="#ref-3">[3]</a> under UCAN-gated authorization. The codebase is licensed AGPL-3.0 across the client editor and dSheets<a class="cite" href="#ref-4">[4]</a>, and no native token, fee schedule, or venture round is currently disclosed on fileverse.io<a class="cite" href="#ref-5">[5]</a>.</p>
+        <p>We find the project's distinguishing properties relative to peers are decentralization-by-default of persistence, AGPL-licensed walk-away portability, and onchain-aware spreadsheet primitives; its principal vulnerabilities are an undisclosed funding path, a partially audited cryptographic stack, and Link Lock URL-fragment leakage. This report applies competitive, technical, and economic frameworks to assess where the design is load-bearing and where it is fragile.</p>
+        <p><strong>Data cutoff date: 2026-04-27.</strong></p>
+      </article>
+    </section>
+
+    <div class="section-rule"></div>
+
+    <!-- Background -->
+    <section id="background" class="mb-16">
+      <div class="flex items-baseline gap-3 mb-6">
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 3</span>
+        <h2 class="text-2xl font-bold text-slate-900">Background &amp; Context</h2>
+      </div>
+      <article class="prose-body">
+        <h3>Why this protocol exists now</h3>
+        <p>Fileverse exists at the intersection of three secular trends that have only recently converged: a regulatory environment where custodial cloud productivity tools have become a measurable risk vector, a technical environment where local-first CRDT collaboration and content-addressed storage are simultaneously mature and cheap, and a market environment where Web3-native users have begun authoring more durable artifacts (DAO governance, treasury operations, conference programming) than wallets and dApps were originally designed to host.</p>
+
+        <h3>Regulatory landscape</h3>
+        <p>The custodial productivity stack — Google Workspace, Microsoft 365, Notion, Dropbox — has accumulated a documented track record of compelled disclosure and metadata leakage. Even projects with stronger privacy posture have not been immune: Proton's compliance with a Swiss court order to share account-recovery email addresses with French authorities in 2024<a class="cite" href="#ref-13">[13]</a> demonstrates that custodianship of metadata creates legal exposure even when content is cryptographically blind. The European Union's NIS2 directive and the broader category of cross-jurisdictional data-access regimes have raised the cost of operating any product whose business model depends on holding plaintext or recoverable metadata.</p>
+        <p>The structural answer that emerges is encryption that prevents the platform from reading content combined with persistence that does not depend on the platform's continued operation. Fileverse's walk-away framing<a class="cite" href="#ref-1">[1]</a> is a direct response to this regulatory shape: cryptographic capability to recover one's own data is positioned as a digital right rather than a contractual term.</p>
+
+        <h3>Technical landscape</h3>
+        <p>Three infrastructure trends have made decentralized E2EE productivity feasible at user-acceptable latency. First, Yjs CRDTs<a class="cite" href="#ref-14">[14]</a> and the broader JSON CRDT family<a class="cite" href="#ref-15">[15]</a> have matured into production-grade libraries with strong eventual consistency guarantees regardless of message order. The Yjs codebase now powers JupyterLab, AFFiNE, and Fileverse, validating it across diverse workloads.</p>
+        <p>Second, the local-first essay by Ink &amp; Switch in 2019<a class="cite" href="#ref-16">[16]</a> crystallized the design pattern that Fileverse implements: documents live primarily on the user's device, the cloud is one synchronization channel rather than the source of truth, and the user retains both ownership and the ability to operate offline. Third, IPFS pinning has commoditized to the point where multi-provider redundancy is operationally routine. Pinata, Filebase, and Web3.Storage / Storacha<a class="cite" href="#ref-3">[3]</a> expose interchangeable APIs, and the empirical IPFS reliability picture documented in Trautwein et al., SIGCOMM 2022<a class="cite" href="#ref-17">[17]</a> suggests that, while public IPFS DHT retrieval remains unreliable at the long tail, pinned content from established providers is recoverable at sub-second median latency.</p>
+
+        <h3>Market landscape</h3>
+        <p>The third precondition is the emergence of a user base whose work product is sufficiently durable to motivate cryptographic ownership. Conference portals are an instructive observable: the DevCon 2024, ETHSF 2025, and DappCon 2025 community portals all ran on dDocs<a class="cite" href="#ref-5">[5]</a>, reflecting a use case where contributors are wallet-native, content survives the event sponsor cycle, and access control benefits from ENS and multisig primitives. DAO operations is a second cohort: treasury dashboards, proposal drafts, and signer rosters are documents whose authors have a strong preference for non-custodial storage and onchain-conditioned access. dSheets specifically targets the analyst tier of this cohort — users who can read a spreadsheet but cannot write a Trino-backed SQL query against Dune's indexed warehouse<a class="cite" href="#ref-18">[18]</a>.</p>
+        <p>The market context is also shaped by failures in the adjacent space. Skiff's acquisition by Notion in February 2024 and subsequent shutdown on 2024-08-09<a class="cite" href="#ref-19">[19]</a> demonstrated that a venture-backed E2EE workspace can fail to reach a self-sustaining revenue base before its acquirer chooses to absorb the team and shut the product. Skiff offered IPFS pinning as an opt-in feature, wallet-based authentication via MetaMask and Brave Wallet<a class="cite" href="#ref-20">[20]</a>, and Notion-comparable editing — yet users who had not maintained independent IPFS pins lost effective access despite the cryptographic capability to "own" their data. The structural lesson is that nominally portable architecture is only portable in practice if persistence does not depend on the vendor's continued operation.</p>
+
+        <h3>Adjacent regulatory and infrastructure events</h3>
+        <p>Two additional events shape the operating environment. Web3.Storage's 2024 repositioning to Storacha with a paid model from $10/month-minimum<a class="cite" href="#ref-21">[21]</a> demonstrated that the pinning vendor layer is not stable on annual timescales; provider repricing is a near-term operational risk for any project depending on a multi-provider stack. And Proton AG's June 2024 restructuring as a Swiss non-profit foundation<a class="cite" href="#ref-22">[22]</a> established a precedent for privacy-tech businesses to formalize mission alignment through legal structure rather than ownership lockup. The same path is observable in Anytype's Swiss non-profit Any Association<a class="cite" href="#ref-23">[23]</a>.</p>
+
+        <h3>Why the convergence matters</h3>
+        <p>The combined effect is that, as of 2026, the technical and market preconditions for a credible decentralized E2EE productivity suite exist for the first time. Yjs CRDTs make collaboration work on encrypted payloads. IPFS pinning is multi-provider and operationally routine. EVM L2s and sidechains make per-document onchain anchoring sub-cent in cost. A user cohort with non-trivial demand for non-custodial knowledge work has emerged. The category is not new — CryptPad has operated since 2014 — but the combination of cryptographic posture, onchain composability, and walk-away portability that Fileverse aims to provide is novel against any single existing offering. Whether the convergence is sufficient to support a self-sustaining operator is the central question the report engages.</p>
+      </article>
+    </section>
+
+    <div class="section-rule"></div>
+
+    <!-- Mechanism -->
+    <section id="mechanism" class="mb-16">
+      <div class="flex items-baseline gap-3 mb-6">
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 4</span>
+        <h2 class="text-2xl font-bold text-slate-900">Mechanism Analysis</h2>
+      </div>
+      <article class="prose-body">
+        <h3>4.1 Core mechanism — encrypted local-first CRDT sync</h3>
+        <p>Fileverse's central technical primitive is encrypted local-first collaborative editing. Documents live in the client (IndexedDB), are merged via Yjs CRDTs, and are relayed by a stateless WebSocket server that never sees plaintext. Persistence is delegated to IPFS pinning, with smart contracts acting as a content registry.</p>
+        <p>The collaboration server accepts payloads typed as <code>"encrypted_yjs_update"</code> and stores them only ephemerally before pushing the latest state to IPFS<a class="cite" href="#ref-2">[2]</a>. The server has no decryption key; it routes ciphertext between participants in the same session. The client-side flow encrypts each Yjs update under a shared symmetric <code>file_key</code> (delivered out-of-band via the Portal/Owner/Link lock model), sends the ciphertext to the relay, and decrypts incoming updates locally before applying them to the in-memory Y.Doc. IndexedDB sync is enabled per-document via the <code>enableIndexeddbSync</code> flag in <code>@fileverse-dev/ddoc</code><a class="cite" href="#ref-4">[4]</a>.</p>
+        <p>This design has clean tradeoffs. The relay is genuinely server-blind: any session participant with <code>file_key</code> can encrypt, decrypt, and apply updates, and the server cannot. Yjs guarantees strong eventual consistency regardless of message order<a class="cite" href="#ref-15">[15]</a>, so the relay does not need to enforce ordering. The cost is that, without per-message signatures, the relay or any session participant could in principle forge or replay updates. Integrity rests on AES-GCM authenticity plus knowledge of <code>file_key</code> — anyone holding <code>file_key</code> can mutate history coherently.</p>
+        <p>The published secsync protocol<a class="cite" href="#ref-24">[24]</a> defines a more robust envelope in which each update carries (i) per-message symmetric encryption (XChaCha20-Poly1305), (ii) an Ed25519 signature from the author's session key, and (iii) explicit key-rotation events when membership changes. Adopting this envelope would give cryptographic authorship inside an otherwise opaque CRDT log and provide forward secrecy for membership changes — a property the current design does not have. The cost is roughly 96–128 bytes of overhead per message and a more complex client state machine. The migration is non-breaking if the new envelope is added alongside the legacy <code>encrypted_yjs_update</code> type.</p>
+        <p>The evidence suggests this is the largest single architectural decision facing the design. Under a scenario where Fileverse retains its current trust-equal collaboration mode only, the existing envelope is adequate; under any scenario involving role-based access (editor versus viewer enforced cryptographically) or revocation where a former collaborator should lose write access, signed updates become load-bearing. Both secsync<a class="cite" href="#ref-24">[24]</a> and Proton's published Docs encryption model<a class="cite" href="#ref-7">[7]</a> suggest that signed-update plus key-rotation is converging toward a field standard for E2EE collaborative editors.</p>
+
+        <h3>4.2 State management across four tiers</h3>
+        <p>Fileverse splits state across four tiers with distinct mutability and authority semantics. The <strong>client-local</strong> tier (IndexedDB) holds the working copy and survives offline; each document is stored as a Yjs document blob keyed by a <code>ddocId</code>. The <strong>relay-ephemeral</strong> tier holds session state only in memory and deletes it once the latest document is pushed to IPFS; state at this tier is ciphertext only. The <strong>IPFS-pinned</strong> tier is content-addressed: mutation is always "publish a new CID," and <code>fileverse-storage-v2</code> uses Pinata, Filebase, and Web3.Storage as redundant pinning providers, with API-key authentication per provider<a class="cite" href="#ref-3">[3]</a>. The <strong>on-chain registry</strong> tier is authoritative for "current CID for file ID"; the storage service requires Contract Address, Invoker Address, and Chain ID in request headers<a class="cite" href="#ref-3">[3]</a>, implying a registry contract per portal with default chain ID <code>1</code> (Ethereum mainnet).</p>
+        <p>The split is conventional in shape — local + relay + content-addressed store + index — but the distribution of authority is unusual. The on-chain registry is the canonical source for "which CID is current for this file ID," and the lock fields in the registry hold the wrapped file key. This makes the registry the integration point at which encryption material, content addressing, and access control all converge. The design pays for that convergence in gas cost (each rotation or CID update is an on-chain write) and in dependency on the registry chain's liveness.</p>
+
+        <h3>4.3 Resolution / settlement layer</h3>
+        <p>In Fileverse, "settlement" refers to finalizing a document version — the moment an edit transitions from ephemeral CRDT updates in the relay to a durable, shareable artifact. Three triggers are observable. <strong>Idle persistence</strong> occurs when the collaboration server pushes the latest state to IPFS once the RTC session ends and clears its memory<a class="cite" href="#ref-2">[2]</a>; this is the default settlement path. <strong>Explicit publish</strong> is exposed in the dDocs UI as a "publish to IPFS" button which forces the client to encrypt the current Y.Doc, upload to IPFS via the storage service, and update the on-chain registry. <strong>Walk-away export</strong> is a recovery flow where users supply portal address plus RSA key material to retrieve and decrypt content independently of the dDocs frontend<a class="cite" href="#ref-1">[1]</a>.</p>
+        <p>Authorization at the settlement layer is precise. Any session participant with <code>file_key</code> can push updates to the relay; only a UCAN holder can pin to IPFS; only the portal owner (or delegate) can update the on-chain CID; anyone holding any of the three lock private keys can decrypt via walk-away. The four-way decomposition is a defensible separation of concerns, and the walk-away path's operator-independence is what makes the AGPL portability story functional rather than theatrical.</p>
+        <p>Failure modes at settlement are bounded but real. If all three IPFS providers are unreachable, the Pinata to Filebase to Web3.Storage fallback chain<a class="cite" href="#ref-3">[3]</a> has no further escape, and a self-hosted IPFS pin is the only out. If a registry update fails after a successful pin, readers see the previous version until idempotent retry succeeds. Concurrent on-chain updates resolve by last-writer-wins at the EVM level; the CRDT history on IPFS may diverge from the registry pointer until reconciled.</p>
+
+        <h3>4.4 Capital flow and authorization (UCAN)</h3>
+        <p>There is no token, fee escrow, or collateral pool in Fileverse. The "capital flow" of the system is the flow of authorization tokens (UCANs) and the underlying flow of pinning costs from end users through Fileverse-the-operator to pinning providers. The storage service issues scoped UCAN bearer tokens after authentication; these gate IPFS upload operations and carry quota metadata. From an architectural standpoint, UCAN is the system's metering primitive: every pin operation can be accounted to an issuing identity, and quotas can be enforced without requiring each user to hold a wallet balance with a vendor. This separates the privacy posture from the cost posture.</p>
+        <p>The on-chain registry imposes a separate capital flow: each <code>registerFile</code>, <code>updateCid</code>, and <code>rotateLocks</code> call is a gas payment, and at the current Ethereum mainnet default<a class="cite" href="#ref-3">[3]</a> this is non-trivial. A single SSTORE-class write is roughly 50,000 gas; at 30 gwei and ETH at $3,000, that is roughly $4.50 per write, scaling $1–$10+ at observed gas prices<a class="cite" href="#ref-11">[11]</a>. On Gnosis Chain at sub-cent per write, the same operation is operationally negligible. The default chain choice therefore has first-order economic consequences for any user authoring more than a handful of documents per month.</p>
+
+        <h3>4.5 Edge cases and trust boundaries</h3>
+        <p>Several edge cases warrant explicit treatment. The <strong>Link Lock URL-fragment design</strong> encodes the file key under a link key embedded in the URL fragment, and anyone with the link decrypts the file; common URL leakage paths — referrer headers, copy-paste into chat apps with link previews, search-bar autosuggest, browser history sync — generalize the audience beyond intended recipients. The 2018 ENS Lyon analysis of CryptPad-style URL-fragment key sharing<a class="cite" href="#ref-10">[10]</a> documents the vector at scale, and the same critique applies to Fileverse. The mitigation requires either time-bounded link keys with on-chain expiry, per-link revocation by lock rotation, or replacement of fragment-based sharing with a server-mediated key handshake bound to recipient identity.</p>
+        <p>A second edge case is <strong>dSheets onchain-write cell mis-targeting</strong>. The V0.3 simulate-and-submit feature<a class="cite" href="#ref-52">[52]</a> moves transaction parameters into spreadsheet cells. A formula-induced cell mutation — including adversarial CSV import or VLOOKUP into untrusted data — can change a transaction destination or amount before signing. The mitigation is a per-cell "transaction-bearing" annotation that disables formulas on those cells and requires a mandatory simulate-and-display step with a diff against last-signed parameters; this is not currently documented as the default behavior and its presence or absence materially changes the severity of the vector.</p>
+        <p>A third edge case is <strong>vOPRF-ID identity loss without recovery</strong>. The username-based authentication mode derives credentials from local key material; if the user clears browser storage without a wallet backup, no recovery path is documented. The walk-away repository explicitly addresses content recovery<a class="cite" href="#ref-1">[1]</a> but does not address identity recovery for vOPRF-only users. Mitigations include mandatory wallet attestation pairing for any portal-owner role, encrypted recovery share to an email-controlled address, or social recovery via Safe / multisig.</p>
+        <p>The fourth edge case is <strong>registry CID poisoning by a compromised owner key</strong>. The on-chain registry treats the <code>owner</code> address as authoritative for <code>updateCid</code>. Compromise of the owner's wallet allows replacement of the CID with a malicious encrypted blob; if the attacker also obtains the file key via a separate path, they can write coherent malicious history. Mitigations include multisig portal owners (e.g., Safe on Gnosis), on-chain timelocks for CID updates, and client-side detection of "CID changed in unexpected window."</p>
+
+        <h3>4.6 Why the mechanism is or is not load-bearing</h3>
+        <p>The mechanism's strengths are concentrated at the persistence and authorization layers: multi-provider pinning with UCAN gating is a robust pattern, and the AGPL plus walk-away combination delivers operator-independence at a level few peers match. The mechanism's weaknesses are concentrated at the relay and access-control layers: the relay does not authenticate authorship, and the link-sharing UX pushes responsibility to user discipline in a way that systematically biases toward leakage. The evidence indicates that the architecture is solid on the persistence side and incomplete on the access-control side, and that the load-bearing migration path is from Option A (opaque relay) to Option B (signed encrypted updates with key rotation) plus a redesign of link-sharing semantics.</p>
+      </article>
+    </section>
+
+    <div class="section-rule"></div>
+
+    <!-- Landscape -->
+    <section id="landscape" class="mb-16">
+      <div class="flex items-baseline gap-3 mb-6">
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 5</span>
+        <h2 class="text-2xl font-bold text-slate-900">Comparative Landscape</h2>
+      </div>
+      <article class="prose-body">
+        <p>We position Fileverse against eight peers selected for analytical relevance to its design choices, not market share alone. The selection set spans the closest open-source E2EE office analog (CryptPad<a class="cite" href="#ref-25">[25]</a>), the integrated-ecosystem custodial-but-blind benchmark (Proton Docs/Sheets<a class="cite" href="#ref-26">[26]</a>), the defunct historical precedent (Skiff<a class="cite" href="#ref-8">[8]</a>), the local-first encrypted Notion-alternative cohort (Anytype<a class="cite" href="#ref-27">[27]</a> and AFFiNE<a class="cite" href="#ref-28">[28]</a>), the dominant non-Google self-hosted procurement comparator (ONLYOFFICE Docs<a class="cite" href="#ref-29">[29]</a>), the architectural alternative to Fileverse's lock model (Lit Protocol<a class="cite" href="#ref-30">[30]</a>), and the analyst-tool substitute that absorbs "see live contract state" workflows (Dune Analytics<a class="cite" href="#ref-31">[31]</a>).</p>
+      </article>
+
+      <h3 class="font-semibold text-lg text-slate-900 mt-8 mb-4">5.1 Comparison matrix</h3>
+      <div class="overflow-x-auto border border-slate-200 rounded-lg bg-white">
+        <table class="matrix w-full">
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th>Fileverse</th>
+              <th>CryptPad</th>
+              <th>Proton Docs/Sheets</th>
+              <th>Skiff (defunct)</th>
+              <th>Anytype</th>
+              <th>AFFiNE</th>
+              <th>ONLYOFFICE Docs</th>
+              <th>Lit Protocol</th>
+              <th>Dune Analytics</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>E2EE (default)</td><td>Yes (RSA+AES, 3-lock)</td><td>Yes (zero-knowledge, ChainPad)</td><td>Yes (OpenPGP-derived)</td><td>Yes (per-doc key trees)</td><td>Yes (per-object)</td><td>No (cloud plaintext); yes if self-hosted</td><td>No by default; opt-in Private Rooms</td><td>Yes (threshold)</td><td>No (custodial SQL)</td></tr>
+            <tr><td>Persistence model</td><td>IPFS multi-provider + onchain registry (Eth/Gnosis)</td><td>Operator's filesystem; pin-required</td><td>Proton infra (CH/DE)</td><td>Skiff infra + opt-in IPFS</td><td>P2P libp2p + backup nodes</td><td>Local + AFFiNE Cloud</td><td>Operator's storage (S3/disk)</td><td>Integrator-chosen ciphertext store; key shares on Lit network</td><td>Dune-operated indexed warehouse</td></tr>
+            <tr><td>License</td><td>AGPL-3.0</td><td>AGPL-3.0</td><td>Proprietary (open-source clients)</td><td>Proprietary (now defunct)</td><td>BSD (Any-Sync); MIT (clients)</td><td>MIT (core); commercial (Cloud)</td><td>AGPL-3.0 (Community); commercial</td><td>Open-source (mixed)</td><td>Proprietary</td></tr>
+            <tr><td>Onchain integration (read live state)</td><td>Yes (dSheets)</td><td>No</td><td>No</td><td>Wallet auth only</td><td>No</td><td>No</td><td>No</td><td>Yes (in Lit Actions)</td><td>Yes (read-only SQL over indexed data)</td></tr>
+            <tr><td>Onchain write (transactions from cells)</td><td>Yes (dSheets v0.3+)</td><td>No</td><td>No</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Indirect (via Lit Action)</td><td>No</td></tr>
+            <tr><td>Wallet authentication</td><td>Yes (plus vOPRF-ID)</td><td>No</td><td>No</td><td>Yes (MetaMask, Brave)</td><td>No (any-id keypair)</td><td>No</td><td>No</td><td>Yes</td><td>Yes (sign-in only)</td></tr>
+            <tr><td>Real-time collaboration substrate</td><td>Yjs CRDT over WebSocket; Waku for self-host discovery</td><td>ChainPad CRDT</td><td>Yjs encrypted client-side</td><td>CRDT (proprietary)</td><td>Event-sourced object replication</td><td>Yjs CRDT</td><td>Server-mediated OT</td><td>N/A (infra)</td><td>N/A (analytics)</td></tr>
+            <tr><td>Spreadsheet primitive</td><td>Fortune Sheet (Excel-compatible) + onchain</td><td>OnlyOffice fork</td><td>Native Sheets (launched 2025)</td><td>None</td><td>None</td><td>Database views (no formulas)</td><td>OOXML-fidelity Excel</td><td>None</td><td>SQL-based, not spreadsheet</td></tr>
+            <tr><td>Self-hosting available</td><td>Yes (collab server + storage)</td><td>Yes</td><td>No</td><td>No</td><td>Yes (backup node)</td><td>Yes (Docker)</td><td>Yes (Community Edition)</td><td>Yes (own node, but quorum required)</td><td>No</td></tr>
+            <tr><td>Funding model</td><td>Undisclosed; AGPL grant-friendly; no token</td><td>Public-interest grants (NLnet, EC); XWiki services</td><td>Swiss non-profit foundation; subscriptions</td><td>VC USD 14.2M (acquihired by Notion)</td><td>Swiss non-profit; subscriptions</td><td>VC USD 5M seed (GGV)</td><td>Commercial enterprise licenses</td><td>VC USD 13M; LITKEY token</td><td>VC USD 69.4M Series B; SaaS revenue</td></tr>
+            <tr><td>Walk-away portability</td><td>Yes (3-lock recovery + AGPL + IPFS pins)</td><td>Partial (export only)</td><td>Partial (export only)</td><td>Demonstrated failure (sunset 2024-08-09)</td><td>Yes (infinite recoverability claim)</td><td>Partial (export from local)</td><td>Operator-dependent</td><td>Network-dependent</td><td>Export-dependent</td></tr>
+            <tr><td>Independent security audit</td><td>In progress (Dedalo, collab-server only)</td><td>NLnet/NGI Trust (2018+)</td><td>Internal; OpenPGP primitives audited</td><td>Closed before independent audits published</td><td>Internal</td><td>Internal</td><td>Per-edition audits</td><td>Community + protocol audits</td><td>SOC 2 (operational)</td></tr>
+            <tr><td>Mainstream-user accessibility</td><td>Medium (wallet step optional)</td><td>High (no wallet)</td><td>High (Workspace-style UX)</td><td>High (was)</td><td>Medium (object-graph learning curve)</td><td>Medium-high</td><td>High (MS Office UX)</td><td>Low (developer-only)</td><td>Low (SQL required)</td></tr>
+            <tr><td>Operating maturity (years)</td><td>&lt;3 (active commits 2024+)</td><td>12 (since 2014)</td><td>Docs 2 / Sheets &lt;1</td><td>4 (defunct after acquisition)</td><td>~5 (since 2020)</td><td>~3 (since 2022)</td><td>~15 (since 2010)</td><td>~5 (V1 mainnet 2024)</td><td>~8 (since 2018)</td></tr>
+            <tr><td>Feature breadth</td><td>Documents, spreadsheets</td><td>Docs, sheets, slides, forms, kanban, whiteboard</td><td>Mail+Drive+Docs+Sheets+Calendar+VPN+Pass</td><td>Mail+Pages+Drive+Calendar</td><td>Object graph + database views</td><td>Docs + edgeless canvas + database</td><td>Docs+Sheets+Slides+Forms+PDF</td><td>Infrastructure only</td><td>SQL dashboards only</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <article class="prose-body mt-8">
+        <h3>5.2 Where Fileverse leads</h3>
+        <p>The matrix surfaces three dimensions where Fileverse's posture is ahead of all listed peers. <strong>Persistence model:</strong> only Fileverse pairs E2EE-by-default with content-addressed multi-provider IPFS storage and an onchain registry; CryptPad and Proton store on a single operator's filesystem, Anytype's P2P backup nodes are encrypted but operationally controlled by Any Association by default, and AFFiNE's cloud is plaintext. <strong>Onchain write from cells:</strong> dSheets V0.3 is the only listed product that exposes simulate-and-submit transaction flow inside spreadsheet cells; Dune Analytics is read-only over indexed data, Lit Actions can submit transactions but not from a spreadsheet, and no other competitor exposes this primitive. <strong>Walk-away portability:</strong> the combination of AGPL-3.0 licensing<a class="cite" href="#ref-4">[4]</a>, the walk-away triple-lock recovery scheme<a class="cite" href="#ref-1">[1]</a>, and IPFS-pinned ciphertext gives operator-independent recovery in a way the listed peers do not match.</p>
+
+        <h3>5.3 Where Fileverse is weaker</h3>
+        <p>The honest reading of the matrix surfaces several dimensions where Fileverse rates weaker than at least one peer. <strong>Operating maturity:</strong> at under three years of active development versus CryptPad's twelve years and ONLYOFFICE's roughly fifteen, Fileverse is younger and less battle-tested in production. The NLnet/NGI Trust review of CryptPad<a class="cite" href="#ref-32">[32]</a> established academic and grant-program trust at a level Fileverse has not yet reached. <strong>Independent security audit:</strong> as of 2026-04-27, only the collaboration-server is under Dedalo audit<a class="cite" href="#ref-2">[2]</a>, and no public audit of <code>@fileverse/crypto</code> has been published. CryptPad has had multiple academic and grant-funded reviews<a class="cite" href="#ref-6">[6]</a>, Proton's OpenPGP primitives are widely audited, and ONLYOFFICE has per-edition audits. <strong>Feature breadth:</strong> CryptPad covers documents, spreadsheets, slides, forms, kanban, and whiteboards; Fileverse covers documents and spreadsheets only. <strong>Funding model legibility:</strong> Proton's Swiss non-profit foundation, Anytype's Any Association, and CryptPad's NLnet / European Commission grant pipeline give each a more legible sustainability story than Fileverse's currently undisclosed mix of grants, founder equity, and (possibly future) paid tier or token.</p>
+        <p>The pattern is consistent: Fileverse leads on architectural decentralization-by-default and onchain composability, and trails on operating maturity, audit posture, feature breadth, and funding legibility. The trailing dimensions are not inherent to the design — they are functions of project age and capital intensity — but they are real and would be visible to any sophisticated procurement evaluator.</p>
+
+        <h3>5.4 Positioning rather than defensibility framing</h3>
+        <p>Treating these comparisons as positioning rather than as a defensibility claim is analytically more useful. The evidence indicates that Fileverse occupies a specific position in the productivity-tooling space: encrypted Google Docs alternative for users who already operate onchain. CryptPad is the stronger choice for non-Web3 organizations needing a privacy-first replacement for Google Workspace; the adoption signal in French ministries and German universities<a class="cite" href="#ref-33">[33]</a> is direct evidence. Proton is the stronger choice for privacy-conscious individuals who value the bundled Mail+Drive+Docs+VPN+Pass ecosystem and 100M+ accounts of scale<a class="cite" href="#ref-34">[34]</a>. ONLYOFFICE is the stronger procurement choice for enterprises whose top requirement is MS Office format compatibility plus self-hosting. Lit Protocol is the stronger choice when programmable conditional access is the binding requirement; Lit is a candidate integration partner rather than a substitute. Dune is the stronger tool for deep historical onchain analysis and shared community dashboards.</p>
+        <p>Fileverse's distinct position is the intersection of three axes that no other listed peer covers simultaneously: E2EE-by-default productivity, content-addressed multi-provider persistence with onchain registry, and onchain-aware spreadsheet primitives. Whether that intersection corresponds to a sufficient addressable user base to support a self-sustaining operator is the open question the economic analysis engages.</p>
+
+        <h3>5.5 Skiff as a structural reference point</h3>
+        <p>Skiff warrants specific treatment because its trajectory is the closest commercial precedent. Skiff offered E2EE office, opt-in IPFS pinning<a class="cite" href="#ref-35">[35]</a>, wallet-based authentication via MetaMask and Brave Wallet<a class="cite" href="#ref-20">[20]</a>, USD 14.2 million in venture funding from Sequoia and others<a class="cite" href="#ref-36">[36]</a>, and Notion-comparable editing UX. Despite these advantages, the product was acquihired by Notion in February 2024 and shut down on 2024-08-09<a class="cite" href="#ref-19">[19]</a>. Two readings of this episode are coherent. The first is that Skiff's failure validates Fileverse's bet that decentralization-by-default — IPFS pinning as the default rather than opt-in, plus AGPL licensing — is the structural answer to the acquihire-then-sunset risk. The second reading is that Skiff's commercial death indicates the addressable market for E2EE+Web3 productivity may not yet support a venture-scale business; under that scenario, Fileverse's path may require a non-venture funding model. The two readings are not mutually exclusive; both can be true simultaneously, and the report treats both as live possibilities.</p>
+      </article>
+    </section>
+
+    <div class="section-rule"></div>
+
+    <!-- Economics -->
+    <section id="economics" class="mb-16">
+      <div class="flex items-baseline gap-3 mb-6">
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 6</span>
+        <h2 class="text-2xl font-bold text-slate-900">Economic &amp; Game-Theoretic Properties</h2>
+      </div>
+      <article class="prose-body">
+        <h3>6.1 Dual-economy framing</h3>
+        <p>Fileverse has no disclosed native token, no published fee schedule, and no announced venture round as of the project's current public presence<a class="cite" href="#ref-5">[5]</a>. Standard tokenomics framing — bonding curves, staking yield, governance distribution — has no purchase here. The economic primitives that do exist are: UCAN-gated quotas on pinning, gas costs for the onchain content registry on Ethereum mainnet and Gnosis Chain, the cost-of-goods structure inherited from Pinata<a class="cite" href="#ref-37">[37]</a>, Filebase<a class="cite" href="#ref-38">[38]</a>, and Web3.Storage / Storacha<a class="cite" href="#ref-21">[21]</a>, AGPL-3.0 licensing in the absence of disclosed funding, and the strategic choices facing self-hosters versus Fileverse-hosted users.</p>
+        <p>We therefore treat the system as a <strong>dual-economy operation</strong>: a free public good funded by an undisclosed mix of grants, founder equity, and (potentially) a future paid tier, layered with metered services (UCAN quotas, paymaster credits, premium tier) that constitute the only legible cash-flow path. This framing draws on Rochet &amp; Tirole's two-sided platform pricing<a class="cite" href="#ref-39">[39]</a>, in which one side (here, end-users) is subsidized by the other (here, premium tier or grants), and on the local-first software essay<a class="cite" href="#ref-16">[16]</a> which identifies the structural tension that local-first eliminates cloud lock-in but also eliminates cloud's revenue mechanism.</p>
+
+        <h3>6.2 Participation incentive equilibria</h3>
+        <p>The incentive loop has four distinguishable participants: end-users (U), the Fileverse operator (F), pinning providers (P_i in {Pinata, Filebase, Storacha}), and self-hosters (S). Per-document monthly cost to F at a 1 MB midpoint with two collaborators editing 8 hours/week is approximately $0.01, dominated by bandwidth not storage. The cost is small per-document but unbounded in aggregate; cost per user scales with document count and re-fetch frequency, not seat count, which is the inverse of Google Workspace's $6/seat/month structure<a class="cite" href="#ref-40">[40]</a>.</p>
+        <p>In the symmetric equilibrium where all participants follow protocol intent, F bundles pinning costs into a free tier capped by quota, with overflow to a paid tier. Estimated break-even with 1,000 paying users at $5/month (a CryptPad-comparable tier where CryptPad's lowest paid plan is €5/month<a class="cite" href="#ref-41">[41]</a>) yields $5,000/month against roughly $2,000–$3,000/month in pinning at modest scale. That is feasible for infrastructure but does not cover engineering. F is therefore implicitly subsidized — by grants, founder equity, or a future raise — until a token or paid tier emerges.</p>
+        <p>The asymmetric scenario is more troubling. Early participation is <strong>not</strong> a dominant strategy in the standard tokenomic sense: there is no airdrop signal, no early-staker yield, no fee discount on accumulated activity. The dominant strategy for a rational, non-ideological user is wait-and-see — use the free tier without reciprocating, defect to CryptPad if Fileverse meters more aggressively, defect to a Notion-with-acquired-Skiff-tech feature if a Web2 incumbent ships an E2EE option. Early participation is dominant only for users who place positive utility on (a) ideological alignment with self-sovereignty, or (b) the option value of a future token retroactively rewarding usage — exactly the incentive Fileverse has not committed to. The architecture is sound; the participation incentive is weak.</p>
+
+        <h3>6.3 Equilibrium boundaries</h3>
+        <p>We can state explicit equilibrium conditions. The Fileverse-as-gateway equilibrium holds when (1) per-user revenue × paying-share &ge; per-user cost × total active users; (2) self-hosting share <em>q</em> &lt; ~25% (above which F's gateway loses pricing power against pinning vendors and cannot negotiate enterprise discounts — Filebase's enterprise tier discounts begin at 10 TB committed monthly<a class="cite" href="#ref-38">[38]</a>); (3) HHI of F's pinning spend across providers stays below ~5,000 (no single provider carrying &gt;70% of spend); and (4) free-tier abuse stays below quota envelopes that force traffic onto the most expensive provider.</p>
+        <p>Equilibrium collapses when aggregate free-tier abuse pushes per-user cost above per-user revenue × paying-share for more than two quarters with no grant injection; when any single provider degrades or sunsets (precedent: Storacha's 2024 free-tier wind-down<a class="cite" href="#ref-21">[21]</a>); when self-hosting share exceeds ~40%; or when a larger E2EE incumbent (Proton, with Sheets launched in December 2025<a class="cite" href="#ref-43">[43]</a>) prices a comparable feature at &lt;$5/month and absorbs the privacy-conscious segment. The equilibrium is conditional and fragile: it requires sustained subsidy or a paid-tier launch within roughly 12–24 months under reasonable cost projections.</p>
+
+        <h3>6.4 Unit economics scenarios</h3>
+        <p>Three scenarios bound the analysis. In a <strong>low scenario</strong> with 25,000 registered users and 2% paid conversion, monthly recurring revenue is roughly $3,700 against infra costs of roughly $3,150 — covering infra but not engineering, implying grant or founder-equity subsidy. In a <strong>medium scenario</strong> with 200,000 registered and 4% conversion, MRR rises to roughly $70,400 against $60,000 in infra; gross margin around 15–30% blended, but engineering of $120K/month fully loaded for a 6–8 person team implies F still needs supplementary revenue. In a <strong>scale scenario</strong> with 1.5 million registered and 6% conversion, MRR reaches roughly $918K with infra COGS around $982K pre-discount, falling to roughly $550K at committed-volume rates (&gt;10 TB triggers Filebase enterprise discount<a class="cite" href="#ref-38">[38]</a>). Gross margin approaches 40% post-discount; the project becomes self-sustaining at this scale, funding a 15–25 person team without a token or VC layer.</p>
+        <p>The arithmetic shows the model is viable only at &gt;100,000 paid users, equivalent to roughly 1.5M registered. Below that, Fileverse is structurally subsidy-dependent. CryptPad reached approximately 5,000 paying users at ~280K registered after a decade<a class="cite" href="#ref-9">[9]</a>; Fileverse would need to either grow faster than that or accept a long subsidy horizon.</p>
+      </article>
+
+      <figure class="mt-8 bg-white border border-slate-200 rounded-lg p-6">
+        <figcaption class="text-sm text-slate-600 mb-4">
+          <strong class="text-slate-900">Figure 6.4 — Monthly unit economics by scenario.</strong>
+          Low (25K registered, 2% conversion): MRR $3.7K vs. infra $3.15K. Medium (200K, 4%): MRR $70.4K vs. infra $60K. Scale (1.5M, 6%): MRR $918K vs. post-discount infra $550K. Engineering load is held at $120K/month across all scenarios.
+        </figcaption>
+        <div style="position: relative; height: 320px;">
+          <canvas id="econChart"></canvas>
+        </div>
+      </figure>
+
+      <article class="prose-body mt-8">
+        <h3>6.5 Fee-structure corridor</h3>
+        <p>Comparators set the pricing band: CryptPad<a class="cite" href="#ref-41">[41]</a> charges €5/month for 20 GB and €15/month for 1 TB; Proton Drive bundling Docs and Sheets<a class="cite" href="#ref-44">[44]</a> starts at $2.99/month and runs to $9.99/month for 1 TB Unlimited; Anytype's Builder tier is $99/year<a class="cite" href="#ref-27">[27]</a> with $9.99/month equivalent; Standard Notes Productivity is $90/year<a class="cite" href="#ref-45">[45]</a>. Median paid-tier price is $5–$10/month for 100 GB–1 TB. Fileverse's price defection threshold against CryptPad is roughly $7/month; against Proton's bundled $9.99 it is roughly $10/month. Fileverse therefore has roughly a $5–$8 price corridor in which to operate.</p>
+        <p>A plausible structure within that corridor: free tier (1 GB pin, 5 GB egress, wallet-bound or vOPRF with rate-limit), Pro tier ($6/month, 50 GB pin and 200 GB egress), and an Onchain Premium tier ($20/month, including paymaster credits and ENS-based access policies) where Fileverse has a clear advantage over Proton/CryptPad since neither competes on wallet-native primitives. None of this is announced; it is a constraint analysis, not a proposed roadmap.</p>
+
+        <h3>6.6 Attack and gaming surface</h3>
+        <p>We highlight five vectors with quantified impact. <strong>UCAN Quota Sybil:</strong> if vOPRF-ID accounts can be created without economic cost, an attacker spawns N accounts to multiply free quota. At 10,000 sybils — achievable via cheap headless-browser farms — costs reach $6,500/month, which exceeds the low scenario's MRR of $3,700. Wallet-based authentication binds an account to a funded address and partially mitigates; vOPRF-only accounts do not. <strong>Pinning Provider Cartel:</strong> if two of three providers coordinate or one absorbs another, F's bargaining position degrades; the Storacha repositioning increased the cheapest fallback's price from $0/month to $10/month-minimum plus $0.05/GB. <strong>Link Lock Leakage:</strong> a 1% per-link leakage rate on documents with average three shares yields roughly 3% silent confidentiality breach across the corpus. <strong>Stateless Relay Free-Riding:</strong> a non-Fileverse application using the relay as a free encrypted CRDT carrier costs F approximately $23/month per concurrent steady stream at AWS data-transfer rates<a class="cite" href="#ref-46">[46]</a>. <strong>Onchain Registry Gas Griefing:</strong> a 10× gas spike (30 to 300 gwei) raises per-write cost from $4.50 to $45; 100 Onchain Premium users at 100 sponsored writes/month exposes F to roughly $440K/month of unfunded gas during a sustained spike unless dynamic gas-cap throttling is in place.</p>
+
+        <h3>6.7 Failure modes</h3>
+        <p>Six failure modes are documented. <strong>Pinning provider cascade failure</strong> at medium-scenario volume puts roughly 170 TB at risk; emergency re-pinning costs roughly $850K one-time at Pinata-comparable emergency vendor pricing. <strong>Triple-lock recovery path compromise</strong> via Link Lock leakage produces silent confidentiality breaches whose reputational impact is asymmetric — comparable to the Skiff sunset's impact on its category<a class="cite" href="#ref-8">[8]</a>. <strong>Sybil free-tier exhaustion</strong> can exceed low-scenario MRR. <strong>Self-host defection at scale</strong>: 40% defection at scale-scenario volume drops MRR from $918K to $612K with engineering costs unchanged, compressing margin from 40% to 20%. <strong>Onchain registry gas-cost inflation</strong> during congestion windows drains paymaster faster than provisioned. <strong>Audit gap on cryptographic library</strong> is a universal-impact failure mode if a vulnerability in the lock-wrapping path is discovered before audit completion; recovery requires re-key plus re-pin of the entire corpus.</p>
+
+        <h3>6.8 Capital efficiency under no-token framing</h3>
+        <p>Under conditions where Fileverse never launches a token, capital efficiency is bounded by the rate at which paid-tier conversion grows relative to free-tier infrastructure burden. The mechanism's principal capital-efficiency advantage is that COGS scales with document count and bandwidth, not seat count — so a long-tail of low-activity users imposes lower marginal cost than a similarly sized seat-licensed product. The mechanism's principal capital-efficiency disadvantage is that it has no built-in mechanism to convert free users to paid users (unlike Proton's bundle wedge); Fileverse must invent its conversion funnel from scratch.</p>
+        <p>Under conditions where Fileverse does eventually launch a token, classical mechanism design (token as quota voucher, governance share, or retroactive contributor reward) becomes available. Quadratic-funding-style mechanisms drawing on Buterin, Hitzig, and Weyl's design for funding public goods<a class="cite" href="#ref-47">[47]</a> could in principle finance Fileverse infra if a token or matched-grant program were introduced. Quadratic funding, however, requires identity resistance to sybil attacks, which Fileverse's vOPRF-ID partially provides but has not been formally evaluated for that use.</p>
+
+        <h3>6.9 What the economics imply for the architecture</h3>
+        <p>The economic constraints flow back into architectural decisions. The self-hosting threshold (the project should target self-hosting share in the 5–25% band) suggests Fileverse needs network-effect features unavailable to forks: paymaster credits whose keys are operator-controlled, cross-portal Waku discovery that has utility only at network scale, and a commercial-license carve-out for organizations seeking SLA plus indemnification beyond AGPL terms (the MongoDB SSPL to commercial pattern<a class="cite" href="#ref-48">[48]</a> is the precedent). None of these violate AGPL; all create gradient between fork and Fileverse-hosted experience.</p>
+        <p>The registry-chain default (Gnosis preferable to Ethereum mainnet) is a direct implication of the gas-griefing vector and the paymaster-exposure analysis. The tier-by-attestation quota policy is a direct implication of the sybil-exhaustion vector. The audit-first sequencing on <code>@fileverse/crypto</code> is a direct implication of Anderson's economics-of-security analysis<a class="cite" href="#ref-49">[49]</a>, which predicts under-investment in audits as a documented equilibrium for free-tier security software.</p>
+        <p>The evidence indicates the economic constraints are not separate from the architecture; they are constraints on which architectural choices remain viable as the user base scales. The dual-economy framing requires that the architecture supports both modes — public good and metered services — without compromising either. The current design supports both, but the gradient between them depends on choices not yet committed in public materials.</p>
+      </article>
+    </section>
+
+    <div class="section-rule"></div>
+
+    <!-- Open Questions -->
+    <section id="open-questions" class="mb-16">
+      <div class="flex items-baseline gap-3 mb-6">
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 7</span>
+        <h2 class="text-2xl font-bold text-slate-900">Open Questions &amp; What Would Change Our View</h2>
+      </div>
+      <article class="prose-body">
+        <h3>7.1 Bear / Base / Bull cases</h3>
+      </article>
+
+      <div class="grid md:grid-cols-3 gap-4 mt-4">
+        <div class="scenario-card border-l-4 border-l-rose-500">
+          <div class="text-xs uppercase tracking-widest font-semibold text-rose-700 mb-1">Bear</div>
+          <h4 class="text-base text-slate-900 mb-2">Audit finding + provider exit + breach</h4>
+          <p class="text-sm text-slate-600 leading-relaxed">An audit on <code>@fileverse/crypto</code> reveals a vulnerability in the lock-wrapping path. Concurrent Storacha-style repositioning cascades through the pinning vendor layer<a class="cite" href="#ref-21">[21]</a>. A publicized confidentiality breach traceable to Link Lock leakage damages reputation in a way comparable to the Skiff sunset<a class="cite" href="#ref-8">[8]</a>. Sybil attacks on vOPRF-ID dump unfunded cost on F. Self-hosting share rises past 40%. Trajectory resembles Skiff's — architecturally interesting, commercially unviable.</p>
+        </div>
+        <div class="scenario-card border-l-4 border-l-amber-500">
+          <div class="text-xs uppercase tracking-widest font-semibold text-amber-700 mb-1">Base</div>
+          <h4 class="text-base text-slate-900 mb-2">Sustainable but small operator</h4>
+          <p class="text-sm text-slate-600 leading-relaxed">Dedalo audit on collaboration-server completes without high-severity findings<a class="cite" href="#ref-2">[2]</a>; an independent <code>@fileverse/crypto</code> audit follows within 6–12 months. Registry default switches to Gnosis Chain. Tier-by-attestation quota policy reduces sybil exposure. A paid tier launches in the $5–$10 corridor, achieving roughly 3,000 paying users within 12–18 months — covering infra COGS but not engineering, which remains grant-funded. Fileverse becomes a sustainable but small operator, comparable to CryptPad's footprint.</p>
+        </div>
+        <div class="scenario-card border-l-4 border-l-emerald-500">
+          <div class="text-xs uppercase tracking-widest font-semibold text-emerald-700 mb-1">Bull</div>
+          <h4 class="text-base text-slate-900 mb-2">Category-defining onchain wedge</h4>
+          <p class="text-sm text-slate-600 leading-relaxed">Audit pipeline completes cleanly. Onchain Premium tier achieves disproportionate uptake among DAO operations and DeFi research teams. dSheets becomes a default tool in the analyst stack, partly displacing Dune Analytics' $419–$833+/month per-seat tiers<a class="cite" href="#ref-50">[50]</a> for live-state operational workflows. Filecoin cold-storage deals add a fourth pinning tier<a class="cite" href="#ref-51">[51]</a>. A grant-plus-commercial-license model funds engineering through 100,000+ paid users without requiring a token launch.</p>
+        </div>
+      </div>
+
+      <article class="prose-body mt-8">
+        <h3>7.2 What would change our view</h3>
+        <p>The following are observable conditions that would meaningfully revise the report's conclusions. Each is falsifiable.</p>
+        <ul class="list-disc pl-6 space-y-3 text-slate-700">
+          <li><strong>Self-sustaining unit economics at &le;30,000 paying users</strong> — through commercial-license revenue, large multi-year grants, or paid-tier conversion materially exceeding the CryptPad analog of ~2% of registered users<a class="cite" href="#ref-9">[9]</a> — would meaningfully revise the subsidy-dependent thesis.</li>
+          <li><strong>Audit findings.</strong> If the Dedalo audit publishes high-severity findings on the encrypted-update path<a class="cite" href="#ref-2">[2]</a>, or if an independent audit on <code>@fileverse/crypto</code> reveals weaknesses in the lock-wrapping construction, Finding 5 worsens materially. A clean audit completion strengthens the assessment symmetrically.</li>
+          <li><strong>Registry-default migration to Gnosis Chain</strong> (observable as the default <code>X-Chain-Id</code> emitted by <code>fileverse-storage-v2</code><a class="cite" href="#ref-3">[3]</a>) resolves Finding 4. Continued mainnet default twelve months after this report strengthens the friction critique.</li>
+          <li><strong>Server-mediated key handshake or time-bounded Link Lock with on-chain expiry</strong> would mitigate the highest-severity attack vector identified in Finding 3. Continued URL-fragment-only link sharing eighteen months after this report strengthens the Link Lock critique.</li>
+          <li><strong>Pinning provider exit</strong> (Pinata, Filebase, or Storacha) without a fourth fallback tier (own IPFS cluster or Filecoin cold-storage deals<a class="cite" href="#ref-51">[51]</a>) makes the cascade-failure mode the dominant risk.</li>
+          <li><strong>Credible E2EE-by-default productivity competitor</strong> (most likely Proton via Sheets<a class="cite" href="#ref-43">[43]</a> plus a future onchain integration, or Notion deploying acquired-Skiff IPFS technology) priced at &lt;$5/month would trigger the equilibrium-collapse condition in §6.3.</li>
+          <li><strong>Token announcement</strong> (as quota voucher, governance share, or retroactive contributor reward) invalidates the no-token framing in §6.1 and would re-scope the report toward classical tokenomics analysis.</li>
+        </ul>
+      </article>
+    </section>
+
+    <div class="section-rule"></div>
+
+    <!-- Outlook -->
+    <section id="outlook" class="mb-16">
+      <div class="flex items-baseline gap-3 mb-6">
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 8</span>
+        <h2 class="text-2xl font-bold text-slate-900">Outlook &amp; Scenarios</h2>
+      </div>
+      <article class="prose-body">
+        <p>The forward-looking analysis is framed conditionally throughout. No prescriptive recommendations are issued.</p>
+        <p>Under conditions where Fileverse executes the base case in §7.1, the project occupies a stable but specific position in the productivity-tooling space: encrypted Google Docs alternative for Web3-native organizations, with measurable but bounded penetration into adjacent segments. Conference portals continue to compound as a flagship use case; DAO operations and DeFi research teams adopt dDocs and dSheets at higher rates than mainstream knowledge workers; the paid-tier conversion settles in the 2–4% range comparable to CryptPad's published metrics<a class="cite" href="#ref-9">[9]</a>. The audit gap closes within 6–12 months of this report. Self-hosting share stabilizes in the 5–25% band. Under this trajectory, Fileverse's revenue footprint at the medium-scenario level (roughly $844K ARR per the §6.4 modeling) covers infra and a fraction of engineering; supplementary funding from grants, commercial-license carve-outs, or eventual token launch closes the residual gap.</p>
+        <p>Under conditions where the bull case obtains, dSheets emerges as a category-defining tool for live-state operational workflows in the Web3 stack, partly displacing read-only analytics tools for use cases where transaction submission is the binding requirement. Under those conditions, Fileverse's growth trajectory accelerates beyond CryptPad's analog, the Onchain Premium tier becomes the primary revenue line, and the project crosses the self-sustaining threshold at roughly the 100,000-paying-user mark identified in §6.4. A grant-plus-commercial-license model funds engineering without a token launch. The pinning vendor layer adds a Filecoin cold-storage tier and removes cascade-failure risk. Under these conditions, Fileverse's influence on the Web3-native productivity surface becomes structurally analogous to Safe's role in multisig — a default infrastructure layer rather than a competing application.</p>
+        <p>Under conditions where the bear case obtains, an audit finding, a pinning vendor exit, a Link Lock leakage incident, or an incumbent feature launch each individually represent path-dependent triggers that compress the timeline available to reach self-sustaining economics. If two or more of these conditions occur within a 12-month window, the equilibrium-collapse boundary identified in §6.3 is breached and Fileverse's trajectory increasingly resembles Skiff's. Under those conditions, the AGPL-3.0 license becomes load-bearing in a different way: the codebase survives the operating entity, and self-hosters and forks carry forward the technical artifacts even if the original gateway operation winds down. The walk-away tooling remains functional regardless of operator status, so end-user data does not become hostage to the operator's commercial state.</p>
+        <p>A separate dimension along which the outlook varies is the disclosure path. Under conditions where Fileverse adopts a Swiss non-profit foundation structure (the Proton precedent of June 2024<a class="cite" href="#ref-22">[22]</a> and the Anytype Any Association precedent<a class="cite" href="#ref-23">[23]</a>), the funding legibility critique in §5.3 weakens substantially and the project's longevity expectation rises. Under conditions where Fileverse remains in an undisclosed funding posture, the legibility critique persists and procurement evaluations from larger organizations face an unresolved sustainability question. The two paths are not symmetric: foundation structure is a one-way commitment, and adoption of that structure constitutes strong evidence of mission alignment that survives founder turnover.</p>
+        <p>A third dimension is the integration surface. Under conditions where Lit Protocol's threshold conditional decryption<a class="cite" href="#ref-53">[53]</a> becomes a Fileverse integration option for portals requiring programmable conditional access, the static three-lock model gains a complement that addresses use cases where Portal/Owner/Link locks are structurally insufficient. Under conditions where Fileverse remains lock-only, the project trades simplicity for limited expressive range and Lit-using competitors retain an advantage in conditional-access-heavy use cases.</p>
+        <p>A fourth dimension is the secsync-style envelope migration. Under conditions where Fileverse ships per-message Ed25519 signatures and explicit key-rotation snapshots alongside the legacy <code>encrypted_yjs_update</code> envelope, role-based access (editor versus viewer) becomes cryptographically enforceable and former collaborators lose write access on revocation. Under conditions where the legacy envelope persists, trust-equal collaboration remains the operating mode and the design does not generalize cleanly to "open team" semantics.</p>
+        <p>Across all scenarios, two observations persist. First, the architecture's persistence story (multi-provider IPFS pinning plus AGPL-licensed walk-away tooling plus onchain registry) is the most durable asset of the design and is robust to most failure modes that affect the operating entity. Even in the bear case, the persistence story survives in the form of forks, self-hosters, and end-user-controlled IPFS pins. Second, the access-control story (URL-fragment Link Locks, opaque-relay encrypted-update envelope, vOPRF-ID identity recovery gap) is the most fragile asset of the design and is the layer most in need of further engineering investment regardless of the macro scenario. The gap between the persistence-layer maturity and the access-control-layer maturity is the most internally informative observation about where the project's load-bearing engineering work remains.</p>
+        <p>The evidence indicates that the question of which scenario obtains is conditional on observable engineering and disclosure events over the next 12–24 months, most of which are tracked in §7.2. The data cutoff for this report is 2026-04-27; any subsequent commit, audit publication, pricing change, competitor launch, or funding disclosure can shift the assessment along the axes identified above.</p>
+      </article>
+    </section>
+
+    <div class="section-rule"></div>
+
+    <!-- Methodology -->
+    <section id="methodology" class="mb-16">
+      <div class="flex items-baseline gap-3 mb-6">
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Appendix</span>
+        <h2 class="text-2xl font-bold text-slate-900">Methodology</h2>
+      </div>
+      <article class="prose-body">
+        <h3>Research questions</h3>
+        <p>The report attempts to answer seven questions derived from the concept document and Phase 1–3 outputs: (1) what Fileverse actually does and where its architecture differs structurally from existing E2EE productivity suites; (2) how Fileverse compares to live and defunct competitors across cryptographic posture, persistence model, license, onchain integration, funding, and walk-away portability; (3) where the load-bearing technical degrees of freedom are; (4) what the unit-economics shape implies absent a token; (5) what the dominant attack vectors and failure modes are; (6) what successful 12–24 month execution looks like under current constraints; and (7) what is unresolved or underdetermined by public materials.</p>
+
+        <h3>Sources consulted</h3>
+        <p>Sources are deduplicated by URL across Phase 1–3 outputs. The report cites 53 distinct sources spanning: Fileverse repositories and homepage (8 primary repos and live deployments); on-chain explorer and gas data (Etherscan); competing protocols and adjacent products (CryptPad, Proton, Skiff via Wayback, Anytype, AFFiNE, ONLYOFFICE, Lit Protocol, Dune, plus 12 adjacent peers); pinning, IPFS, and infrastructure providers (Pinata, Filebase, Web3.Storage / Storacha, IPFS PSA spec, AWS, TweetNaCl); chain and ecosystem references (Safe, ENS, Filecoin, Polygon); academic literature and protocol white papers (Yjs, JSON CRDT, Peritext, local-first essay, secsync, IPFS SIGCOMM, Benet, ENS Lyon URL-fragment analysis, Procaccia/Tennenholtz, Buterin/Hitzig/Weyl, Hardin, Rochet/Tirole, Adar/Huberman, Anderson, Trail of Bits); and independent reporting (The Verge, CyberInsider, MacRumors, 404 Media, TechCrunch, CoinDesk).</p>
+
+        <h3>Frameworks applied</h3>
+        <p>Eleven analytical frameworks structure the report: (1) cryptographic-posture decomposition (zero-knowledge, E2EE-by-default, hybrid, custodial); (2) persistence-model decomposition (custodial, content-addressed multi-provider, P2P, integrator-chosen); (3) license-and-portability decomposition (AGPL, MIT/BSD, proprietary, defunct); (4) Rochet–Tirole two-sided platform pricing for the dual-economy framing; (5) Hardin's tragedy-of-the-commons for free-tier consumption; (6) Anderson's economics-of-security for under-investment in audits; (7) the local-first essay as a normative reference for the architecture; (8) the secsync envelope as a counter-factual for the relay design; (9) the Procaccia–Tennenholtz "approximate mechanism design without money" framing for capacity allocation absent a token; (10) Buterin–Hitzig–Weyl quadratic funding as a counter-factual for grant-funded scenarios; and (11) the Skiff trajectory as a structural reference point for the acquihire-then-sunset failure mode.</p>
+
+        <h3>Production process</h3>
+        <p>The report was produced via a five-phase pipeline. Phase 1 enumerated 26 competitors. Phase 2a reduced that to eight teardowns spanning the relevant axes; Phase 2b produced the technical-architecture analysis (7 sections, 5-chain comparison, 8 attack vectors); Phase 2c produced the economic and game-theoretic analysis (8 sections, 6 failure modes, dual-economy model). Phase 3 synthesized a product specification (9 sections, 12 Go/No-Go conditions, 9 cross-phase conflicts addressed). Phase 3.5 documented this methodology (118 sources, 11 frameworks). Phase 4 produced the long-form report consumed by this rendered page (8,926 words, 5 findings).</p>
+
+        <h3>Limitations and what the report does not cover</h3>
+        <p>Several questions remain partially or fully unresolved by public materials: the on-chain registry contract source code, the exact wire format of <code>encrypted_yjs_update</code>, the Dedalo audit scope and final report, the dSheets per-cell trust boundary in V0.3, the local-LLM integration's threat model, and Fileverse's funding path. The report's quantitative estimates (per-document cost, sybil-attack cost, gas-spike exposure, scenario MRR) are constructed from public unit pricing and standard arithmetic; they are not internal Fileverse figures and are not represented as such. The Link Lock leakage rate of 1% per link is a modeling assumption derived from the ENS Lyon analysis and not a measured value for Fileverse specifically.</p>
+
+        <h3>Disclosure</h3>
+        <p>The researcher holds no equity, token, advisory relationship, or commercial engagement with Fileverse or any of the competitors discussed. The report received no compensation from Fileverse or any third party. All sources cited are publicly accessible as of the data cutoff. The methodology document at <code>research/methodology.md</code> within this project's directory contains the full source list and per-source notes.</p>
+      </article>
+    </section>
+
+    <div class="section-rule"></div>
+
+    <!-- References -->
+    <section id="references" class="mb-16">
+      <div class="flex items-baseline gap-3 mb-6">
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Appendix</span>
+        <h2 class="text-2xl font-bold text-slate-900">References</h2>
+      </div>
+      <ol class="references-list list-decimal pl-6 text-slate-700" id="references-ol">
+        <li id="ref-1">Fileverse, <em>walk-away repository README</em>. <a href="https://github.com/fileverse/walk-away">github.com/fileverse/walk-away</a> (retrieved 2026-04-27).</li>
+        <li id="ref-2">Fileverse, <em>collaboration-server README</em>. <a href="https://github.com/fileverse/collaboration-server">github.com/fileverse/collaboration-server</a> (retrieved 2026-04-27).</li>
+        <li id="ref-3">Fileverse, <em>fileverse-storage-v2 README</em>. <a href="https://github.com/fileverse/fileverse-storage-v2">github.com/fileverse/fileverse-storage-v2</a> (retrieved 2026-04-27).</li>
+        <li id="ref-4">Fileverse, <em>fileverse-ddoc README</em>. <a href="https://github.com/fileverse/fileverse-ddoc">github.com/fileverse/fileverse-ddoc</a> (retrieved 2026-04-27).</li>
+        <li id="ref-5">Fileverse homepage. <a href="https://fileverse.io">fileverse.io</a> (retrieved 2026-04-27).</li>
+        <li id="ref-6">CryptPad Blog, <em>CryptPad whitepaper</em> (2023-02-02). <a href="https://blog.cryptpad.org/2023/02/02/CryptPad-whitepaper/">blog.cryptpad.org</a>.</li>
+        <li id="ref-7">Proton Blog, <em>Docs on Proton Drive — encryption</em> (2024-07-03). <a href="https://proton.me/blog/docs-proton-drive">proton.me/blog/docs-proton-drive</a>.</li>
+        <li id="ref-8">The Verge, <em>Skiff shutting down — Notion acquired</em> (2024-02-12). <a href="https://www.theverge.com/24039915/skiff-shutting-down-notion-acquired">theverge.com/24039915</a>.</li>
+        <li id="ref-9">CryptPad Blog, <em>Onwards and Upwards — operating metrics</em> (2024-06-12). <a href="https://blog.cryptpad.org/2024/06/12/Onwards-and-upwards/">blog.cryptpad.org</a>.</li>
+        <li id="ref-10">ENS Lyon, <em>URL-fragment key sharing weaknesses</em> (HAL Archive, 2018). <a href="https://hal.science/hal-01781231">hal.science/hal-01781231</a>.</li>
+        <li id="ref-11">Etherscan Gas Tracker. <a href="https://etherscan.io/gastracker">etherscan.io/gastracker</a> (retrieved 2026-04-27).</li>
+        <li id="ref-12">Trail of Bits, <em>Our 2022 security audit cycle</em> (2023-02-14). <a href="https://blog.trailofbits.com/2023/02/14/our-2022-security-audit-cycle/">blog.trailofbits.com</a>.</li>
+        <li id="ref-13">404 Media, <em>Proton Mail discloses recovery email to Spanish police</em> (2024-05-06). <a href="https://www.404media.co/proton-mail-discloses-recovery-email-to-spanish-police/">404media.co</a>.</li>
+        <li id="ref-14">Nicolaescu et al., <em>Yjs: A framework for near real-time P2P shared editing on arbitrary data types</em>, ICWE 2015. <a href="https://link.springer.com/chapter/10.1007/978-3-319-19890-3_55">link.springer.com</a>.</li>
+        <li id="ref-15">Kleppmann &amp; Beresford, <em>A Conflict-Free Replicated JSON Datatype</em>, arXiv:1608.03960 (2016). <a href="https://arxiv.org/abs/1608.03960">arxiv.org/abs/1608.03960</a>.</li>
+        <li id="ref-16">Kleppmann, Wiggins, van Hardenberg, McGranaghan, <em>Local-first software</em>, Ink &amp; Switch (2019). <a href="https://www.inkandswitch.com/local-first/">inkandswitch.com/local-first</a>.</li>
+        <li id="ref-17">Trautwein et al., <em>Design and Evaluation of IPFS</em>, SIGCOMM 2022. <a href="https://dl.acm.org/doi/10.1145/3544216.3544232">dl.acm.org</a>.</li>
+        <li id="ref-18">Dune Docs, <em>Data catalog overview</em>. <a href="https://docs.dune.com/data-catalog/overview">docs.dune.com</a> (retrieved 2026-04-27).</li>
+        <li id="ref-19">CyberInsider, <em>Skiff shutting down — alternatives</em> (2024-02-12). <a href="https://cyberinsider.com/skiff-shutting-down-alternatives-to-skiff-mail/">cyberinsider.com</a>.</li>
+        <li id="ref-20">Wayback Machine, Skiff Blog, <em>Web3 — wallet authentication</em>. <a href="https://skiff.com/blog/web3">skiff.com/blog/web3</a> (retrieved 2026-04-27).</li>
+        <li id="ref-21">Storacha, <em>Web3.Storage rebrands to Storacha Network</em> (2024). <a href="https://blog.storacha.network/web3-storage-rebrands-to-storacha-network/">blog.storacha.network</a>.</li>
+        <li id="ref-22">Proton Blog, <em>Proton non-profit foundation</em> (2024-06-17). <a href="https://proton.me/blog/proton-non-profit-foundation">proton.me/blog/proton-non-profit-foundation</a>.</li>
+        <li id="ref-23">Anytype Blog, <em>Anytype 1.0 — Any Association</em>. <a href="https://blog.anytype.io/anytype-1-0/">blog.anytype.io/anytype-1-0</a> (retrieved 2026-04-27).</li>
+        <li id="ref-24">Graf, <em>secsync — Architecture for end-to-end encrypted CRDTs</em>. <a href="https://github.com/nikgraf/secsync">github.com/nikgraf/secsync</a> (retrieved 2026-04-27).</li>
+        <li id="ref-25">CryptPad homepage. <a href="https://cryptpad.org/">cryptpad.org</a> (retrieved 2026-04-27).</li>
+        <li id="ref-26">Proton, <em>Drive Docs</em>. <a href="https://proton.me/drive/docs">proton.me/drive/docs</a> (retrieved 2026-04-27).</li>
+        <li id="ref-27">Anytype Pricing. <a href="https://anytype.io/pricing">anytype.io/pricing</a> (retrieved 2026-04-27).</li>
+        <li id="ref-28">AFFiNE Blog, <em>Notion alternative</em>. <a href="https://affine.pro/blog/notion-alternative">affine.pro/blog</a> (retrieved 2026-04-27).</li>
+        <li id="ref-29">ONLYOFFICE homepage. <a href="https://www.onlyoffice.com/">onlyoffice.com</a> (retrieved 2026-04-27).</li>
+        <li id="ref-30">Lit Protocol Spark, <em>Private data on the open web</em>. <a href="https://spark.litprotocol.com/private-data-on-the-open-web/">spark.litprotocol.com</a> (retrieved 2026-04-27).</li>
+        <li id="ref-31">Dune homepage. <a href="https://dune.com/">dune.com</a> (retrieved 2026-04-27).</li>
+        <li id="ref-32">NLnet, <em>CryptPad NGI Trust project</em>. <a href="https://nlnet.nl/project/CryptPad-NGITrust/">nlnet.nl</a> (retrieved 2026-04-27).</li>
+        <li id="ref-33">CryptPad Blog, <em>2023 roadmap recap</em> (2023-12-14). <a href="https://blog.cryptpad.org/2023/12/14/CryptPad-2023-roadmap-recap/">blog.cryptpad.org</a>.</li>
+        <li id="ref-34">Proton Blog, <em>100 million accounts</em> (2024-09-17). <a href="https://proton.me/blog/100-million-accounts">proton.me/blog/100-million-accounts</a>.</li>
+        <li id="ref-35">Wayback Machine, Skiff Blog, <em>Skiff IPFS</em> (2022-11-15). <a href="https://skiff.com/blog/skiff-ipfs">skiff.com/blog/skiff-ipfs</a>.</li>
+        <li id="ref-36">TechCrunch, <em>Skiff seed round</em> (2022-03-24). <a href="https://techcrunch.com/2022/03/24/skiff-seed-round/">techcrunch.com</a>.</li>
+        <li id="ref-37">Pinata Pricing. <a href="https://www.pinata.cloud/pricing">pinata.cloud/pricing</a> (retrieved 2026-04-27).</li>
+        <li id="ref-38">Filebase Pricing. <a href="https://filebase.com/pricing">filebase.com/pricing</a> (retrieved 2026-04-27).</li>
+        <li id="ref-39">Rochet &amp; Tirole, <em>Platform competition in two-sided markets</em>, JEEA 2003. <a href="https://www.jstor.org/stable/40005188">jstor.org/stable/40005188</a>.</li>
+        <li id="ref-40">Google Workspace Pricing. <a href="https://workspace.google.com/pricing.html">workspace.google.com/pricing</a> (retrieved 2026-04-27).</li>
+        <li id="ref-41">CryptPad Pricing. <a href="https://cryptpad.org/pricing/">cryptpad.org/pricing</a> (retrieved 2026-04-27).</li>
+        <li id="ref-42">Filebase Pricing (alternate URL). <a href="https://filebase.com/pricing/">filebase.com/pricing/</a> (retrieved 2026-04-27).</li>
+        <li id="ref-43">MacRumors, <em>Proton Sheets launches encrypted spreadsheet</em> (2025-12-04). <a href="https://www.macrumors.com/2025/12/04/proton-sheets-launches-encrypted-spreadsheet/">macrumors.com</a>.</li>
+        <li id="ref-44">Proton, <em>Drive Pricing</em>. <a href="https://proton.me/drive/pricing">proton.me/drive/pricing</a> (retrieved 2026-04-27).</li>
+        <li id="ref-45">Standard Notes Plans. <a href="https://standardnotes.com/plans">standardnotes.com/plans</a> (retrieved 2026-04-27).</li>
+        <li id="ref-46">AWS, <em>EC2 on-demand data-transfer pricing</em>. <a href="https://aws.amazon.com/ec2/pricing/on-demand/#Data_Transfer">aws.amazon.com/ec2/pricing</a> (retrieved 2026-04-27).</li>
+        <li id="ref-47">Buterin, Hitzig, Weyl, <em>A flexible design for funding public goods</em>, arXiv:1809.06421 (2018). <a href="https://arxiv.org/abs/1809.06421">arxiv.org/abs/1809.06421</a>.</li>
+        <li id="ref-48">MongoDB, <em>Server Side Public License</em>. <a href="https://www.mongodb.com/legal/licensing/server-side-public-license">mongodb.com/legal</a> (retrieved 2026-04-27).</li>
+        <li id="ref-49">Anderson, <em>Why information security is hard — an economic perspective</em>, ACSAC 2001. <a href="https://www.acsac.org/2001/papers/110.pdf">acsac.org/2001</a>.</li>
+        <li id="ref-50">Dune Pricing. <a href="https://dune.com/pricing">dune.com/pricing</a> (retrieved 2026-04-27).</li>
+        <li id="ref-51">Filecoin homepage. <a href="https://filecoin.io">filecoin.io</a> (retrieved 2026-04-27).</li>
+        <li id="ref-52">Fileverse, <em>fileverse-dsheet README</em>. <a href="https://github.com/fileverse/fileverse-dsheet">github.com/fileverse/fileverse-dsheet</a> (retrieved 2026-04-27).</li>
+        <li id="ref-53">Lit Developer Docs, <em>Mainnet networks</em>. <a href="https://developer.litprotocol.com/network/networks/mainnet">developer.litprotocol.com</a> (retrieved 2026-04-27).</li>
+      </ol>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 pt-8 mt-8 text-sm text-slate-600">
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <div class="text-xs uppercase tracking-widest font-semibold text-slate-500 mb-2">About the researcher</div>
+          <p class="text-slate-700">{{RESEARCHER_NAME}} — independent crypto / Web3 research. Reports follow a consistent five-phase methodology disclosed inside every project at <code>research/methodology.md</code>.</p>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-widest font-semibold text-slate-500 mb-2">Repository</div>
+          <p class="text-slate-700">Source for this report and the underlying research artifacts lives in the project monorepo. See the <a href="../../../README.md" class="text-blue-700 hover:underline">monorepo root README</a>.</p>
+        </div>
+      </div>
+      <div class="mt-8 pt-6 border-t border-slate-200 flex flex-wrap justify-between gap-2 text-xs text-slate-500">
+        <span>Fileverse · Research Report · Compiled 2026-04-27</span>
+        <span>No commercial relationship with subject. No compensation received.</span>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var canvas = document.getElementById('econChart');
+    if (!canvas || typeof Chart === 'undefined') return;
+    var ctx = canvas.getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Low (25K · 2%)', 'Medium (200K · 4%)', 'Scale (1.5M · 6%)'],
+        datasets: [
+          {
+            label: 'MRR (USD/mo)',
+            data: [3700, 70400, 918000],
+            backgroundColor: 'rgba(29, 78, 216, 0.78)',
+            borderColor: 'rgba(29, 78, 216, 1)',
+            borderWidth: 1
+          },
+          {
+            label: 'Infra COGS (post-discount)',
+            data: [3150, 60000, 550000],
+            backgroundColor: 'rgba(244, 114, 182, 0.78)',
+            borderColor: 'rgba(190, 24, 93, 1)',
+            borderWidth: 1
+          },
+          {
+            label: 'Engineering load (held)',
+            data: [120000, 120000, 120000],
+            backgroundColor: 'rgba(100, 116, 139, 0.55)',
+            borderColor: 'rgba(51, 65, 85, 1)',
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            type: 'logarithmic',
+            ticks: {
+              callback: function(v){
+                if (v >= 1000000) return '$' + (v/1000000) + 'M';
+                if (v >= 1000) return '$' + (v/1000) + 'K';
+                return '$' + v;
+              }
+            },
+            title: { display: true, text: 'USD per month (log scale)' }
+          }
+        },
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label: function(ctx){
+                return ctx.dataset.label + ': $' + ctx.parsed.y.toLocaleString();
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
