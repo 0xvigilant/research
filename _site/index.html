@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{RESEARCHER_NAME}} — Research</title>
+<meta name="description" content="Independent research on crypto and Web3 protocols — mechanism design, economic primitives, and product positioning." />
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #0f172a;
+    --paper: #fafaf7;
+    --rule: #e5e7eb;
+    --accent: #1d4ed8;
+    --muted: #475569;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .prose-body {
+    font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: #1e293b;
+  }
+  .prose-body p { margin-bottom: 1.1rem; }
+  section { scroll-margin-top: 80px; }
+  .section-rule {
+    height: 1px;
+    background: linear-gradient(90deg, var(--rule) 0%, transparent 100%);
+    margin: 3rem 0 2rem 0;
+  }
+  .report-card {
+    border: 1px solid var(--rule);
+    background: white;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .report-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .report-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .report-link:hover { text-decoration: underline; }
+  .top-nav a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .top-nav a:hover { color: var(--accent); }
+</style>
+</head>
+<body class="antialiased">
+
+<header class="border-b border-slate-200 bg-white">
+  <div class="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="font-semibold text-slate-900">{{RESEARCHER_NAME}}</div>
+    <nav class="top-nav flex gap-6 text-sm">
+      <a href="#reports">Reports</a>
+      <a href="#about">About</a>
+      <a href="https://github.com/{{GH_USER}}/research" target="_blank" rel="noopener">Source</a>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-6 py-16">
+
+  <section class="mb-16">
+    <h1 class="text-4xl md:text-5xl font-semibold text-slate-900 tracking-tight mb-4">
+      {{RESEARCHER_NAME}}
+    </h1>
+    <p class="prose-body text-lg text-slate-600 max-w-2xl">
+      {{RESEARCHER_BIO}}
+    </p>
+  </section>
+
+  <div class="section-rule"></div>
+
+  <section id="reports" class="mb-16">
+    <h2 class="text-2xl font-semibold text-slate-900 mb-2">Reports</h2>
+    <p class="text-sm text-slate-500 mb-8">Long-form analyst reports. Each follows a common methodology — competitor mapping, technical-architecture analysis, economic and game-theoretic analysis, product specification, and a long-form thesis with explicit falsifiability.</p>
+
+    <div class="space-y-4">
+
+      <article class="report-card rounded-md p-6">
+        <div class="flex items-baseline justify-between mb-2 flex-wrap gap-2">
+          <h3 class="text-xl font-semibold text-slate-900">Fileverse</h3>
+          <span class="text-xs text-slate-500 font-mono">Data cutoff: 2026-04-27</span>
+        </div>
+        <p class="prose-body text-slate-700 mb-4">
+          End-to-end encrypted productivity suite combining a local-first document editor, an onchain-aware spreadsheet, and multi-provider IPFS persistence with an Ethereum and Gnosis Chain content registry. Analyst report covers mechanism, comparative landscape against CryptPad and Proton, economic and game-theoretic properties under a no-token operating model, and observable conditions that would change our view.
+        </p>
+        <div class="flex gap-4 text-sm">
+          <a href="projects/fileverse/" class="report-link">Read report →</a>
+          <a href="https://github.com/{{GH_USER}}/research/tree/main/projects/fileverse" class="report-link" target="_blank" rel="noopener">Source files</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <div class="section-rule"></div>
+
+  <section id="about" class="mb-16">
+    <h2 class="text-2xl font-semibold text-slate-900 mb-4">About</h2>
+    <div class="prose-body max-w-2xl">
+      <p>
+        Reports are produced via a five-phase analytical pipeline: competitor mapping, parallel teardown across competitive, technical, and economic dimensions, integrated product specification, methodology and disclosures, and a long-form thesis report. Every quantitative claim carries an inline citation at point of claim. Forward-looking statements use explicit conditional framing.
+      </p>
+      <p>
+        Each report includes a methodology page documenting sources consulted, frameworks applied, limitations, and disclosures (including data cutoff and any positions held). Reports also include a "What would change our view" subsection that names observable, falsifiable conditions under which the thesis would be revised.
+      </p>
+      <p>
+        The voice is balanced analyst — the reports present multiple sides of contested questions and let the reader form a view, rather than arguing a single thesis.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="border-t border-slate-200 bg-white py-8 mt-16">
+  <div class="max-w-4xl mx-auto px-6 flex items-center justify-between text-sm text-slate-500">
+    <div>© {{RESEARCHER_NAME}}</div>
+    <div>
+      <a href="https://github.com/{{GH_USER}}/research" target="_blank" rel="noopener" class="report-link">github.com/{{GH_USER}}/research</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
