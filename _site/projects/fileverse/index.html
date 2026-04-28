@@ -458,6 +458,15 @@
         <p>We position Fileverse against eight peers selected for analytical relevance to its design choices, not market share alone. The selection set spans the closest open-source E2EE office analog (CryptPad<a class="cite" href="#ref-25">[25]</a>), the integrated-ecosystem custodial-but-blind benchmark (Proton Docs/Sheets<a class="cite" href="#ref-26">[26]</a>), the defunct historical precedent (Skiff<a class="cite" href="#ref-8">[8]</a>), the local-first encrypted Notion-alternative cohort (Anytype<a class="cite" href="#ref-27">[27]</a> and AFFiNE<a class="cite" href="#ref-28">[28]</a>), the dominant non-Google self-hosted procurement comparator (ONLYOFFICE Docs<a class="cite" href="#ref-29">[29]</a>), the architectural alternative to Fileverse's lock model (Lit Protocol<a class="cite" href="#ref-30">[30]</a>), and the analyst-tool substitute that absorbs "see live contract state" workflows (Dune Analytics<a class="cite" href="#ref-31">[31]</a>).</p>
       </article>
 
+        <!-- Quadrant Chart -->
+        <div class="mb-10">
+          <h3 class="mb-1" style="font-family:'Geist Mono',monospace;color:var(--accent);font-size:1.1rem;font-weight:600;">Positioning Map</h3>
+          <p class="text-sm mb-4" style="color:var(--muted)">Peers plotted by decentralization level (x-axis) and collaboration maturity (y-axis). Scores derived from the comparison matrix below.</p>
+          <div style="position:relative;height:380px;">
+            <canvas id="landscapeChart"></canvas>
+          </div>
+        </div>
+
       <h3 class="font-semibold text-lg text-slate-900 mt-8 mb-4">5.1 Comparison matrix</h3>
       <div class="overflow-x-auto border border-slate-200 rounded-lg bg-white">
         <table class="matrix w-full">
@@ -813,6 +822,84 @@
         }
       }
     });
+
+    // Landscape quadrant chart
+    var lCanvas = document.getElementById('landscapeChart');
+    if (lCanvas && typeof Chart !== 'undefined') {
+      var peers = [
+        { label: 'Fileverse',       x: 9, y: 6 },
+        { label: 'CryptPad',        x: 8, y: 7 },
+        { label: 'Standard Notes',  x: 6, y: 3 },
+        { label: 'Anytype',         x: 5, y: 5 },
+        { label: 'Proton Drive',    x: 4, y: 5 },
+        { label: 'AFFiNE',          x: 5, y: 6 },
+        { label: 'Notion',          x: 1, y: 9 },
+        { label: 'Google Docs',     x: 1, y: 10 },
+        { label: 'Skiff (defunct)', x: 5, y: 6 }
+      ];
+      new Chart(lCanvas.getContext('2d'), {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Peers',
+            data: peers.map(function(p){ return { x: p.x, y: p.y }; }),
+            backgroundColor: peers.map(function(p){
+              return p.label === 'Fileverse' ? 'rgba(4,113,169,0.9)' : 'rgba(4,113,169,0.25)';
+            }),
+            borderColor: peers.map(function(p){
+              return p.label === 'Fileverse' ? '#0471a9' : 'rgba(4,113,169,0.5)';
+            }),
+            pointRadius: peers.map(function(p){ return p.label === 'Fileverse' ? 10 : 7; }),
+            pointHoverRadius: 12,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              min: 0, max: 11,
+              title: { display: true, text: 'Decentralization →', color: '#023750', font: { weight: '600' } },
+              grid: { color: 'rgba(4,113,169,0.08)' }
+            },
+            y: {
+              min: 0, max: 11,
+              title: { display: true, text: 'Collaboration Maturity →', color: '#023750', font: { weight: '600' } },
+              grid: { color: 'rgba(4,113,169,0.08)' }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  var idx = ctx.dataIndex;
+                  return peers[idx].label + ' — Decentralization: ' + peers[idx].x + '/10, Collaboration: ' + peers[idx].y + '/10';
+                }
+              }
+            }
+          },
+          animation: {
+            onComplete: function() {
+              var chart = this;
+              var c = chart.ctx;
+              c.save();
+              c.font = '600 11px "Geist Mono", monospace';
+              c.fillStyle = '#023750';
+              chart.data.datasets[0].data.forEach(function(point, i) {
+                var meta = chart.getDatasetMeta(0);
+                var pt = meta.data[i];
+                var xOff = peers[i].label === 'Fileverse' ? -8 : 10;
+                var yOff = peers[i].label === 'Fileverse' ? -14 : -10;
+                c.fillText(peers[i].label, pt.x + xOff, pt.y + yOff);
+              });
+              c.restore();
+            }
+          }
+        }
+      });
+    }
   });
 </script>
 
