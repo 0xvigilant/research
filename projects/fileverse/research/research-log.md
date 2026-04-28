@@ -9,3 +9,5 @@ Phase 3 complete: 2026-04-27 16:01 — research/product-spec.md (9 sections, 12 
 Phase 3.5 complete: 2026-04-27 16:08 — research/methodology.md (118 sources, 11 frameworks)
 Phase 4 complete: 2026-04-27 16:24 — research/research-report.md (8926 words, 5 findings)
 Phase 5 complete: 2026-04-27 16:33 — research/index.html (88 KB, 1 chart, 53 references)
+
+Quality redesign complete: 2026-04-28 — neutral-observation findings (§2), wording discipline applied to §3/§4 (glossing + analogies), 5 visual aids added: Mermaid timeline (§3), file lifecycle flowchart (§4), three-lock key model (§4), quadrant scatter chart (§5), break-even annotation (§6), categorized open-question cards §7 (Technical/Economic/Governance)

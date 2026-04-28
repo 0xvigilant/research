@@ -7,6 +7,18 @@
 <meta name="description" content="Fileverse is an open-source, end-to-end encrypted productivity suite combining a local-first dDocs editor, an onchain-aware dSheets, and multi-provider IPFS persistence with an Ethereum/Gnosis content registry." />
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: {
+    primaryColor: '#0471a9',
+    primaryTextColor: '#023750',
+    lineColor: '#0471a9',
+    edgeLabelBackground: '#f8f9fa',
+    fontSize: '14px'
+  }
+});</script>
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root {
@@ -278,28 +290,28 @@
       <div class="grid md:grid-cols-2 gap-4">
         <div class="finding-card">
           <div class="finding-num mb-2">Finding 01</div>
-          <p class="font-semibold text-slate-900 mb-2">Decentralization-by-default of persistence, not encryption, is the most differentiated property.</p>
-          <p class="text-sm text-slate-600">Multi-provider IPFS pinning plus an Ethereum/Gnosis content registry, paired with AGPL-3.0 licensing<a class="cite" href="#ref-4">[4]</a>, makes the codebase portable beyond the operating entity — a structural answer to the Skiff sunset failure mode<a class="cite" href="#ref-8">[8]</a>.</p>
+          <p class="font-semibold mb-2" style="color:var(--ink)">Files are stored on IPFS and anchored on a public blockchain — the data can outlive the company.</p>
+          <p class="text-sm" style="color:var(--muted)">Fileverse stores files on IPFS (a peer-to-peer file storage network) and records content hashes on a public blockchain.<a class="cite" href="#ref-3">[3]</a> The codebase is licensed AGPL-3.0, which requires any fork to publish its source code.<a class="cite" href="#ref-4">[4]</a> This is the structural property that distinguishes Fileverse from Skiff, which shut down in 2024 without an equivalent portability guarantee.<a class="cite" href="#ref-8">[8]</a></p>
         </div>
         <div class="finding-card">
           <div class="finding-num mb-2">Finding 02</div>
-          <p class="font-semibold text-slate-900 mb-2">The model is structurally subsidy-dependent until ~100,000 paying users.</p>
-          <p class="text-sm text-slate-600">That threshold is roughly an order of magnitude above CryptPad's published 5,000 paying subscribers across ~280,000 registered after a decade of operation<a class="cite" href="#ref-9">[9]</a>. This is the report's primary falsifiable claim.</p>
+          <p class="font-semibold mb-2" style="color:var(--ink)">Sustaining operations requires roughly 100,000 paying users — about 20× more than CryptPad reached in a decade.</p>
+          <p class="text-sm" style="color:var(--muted)">Under the unit-economics model we apply, break-even requires ~100,000 paying users.<a class="cite" href="#ref-9">[9]</a> CryptPad (a comparable open-source encrypted workspace) reached ~5,000 paying subscribers across 280,000 registered users after ten years of operation.<a class="cite" href="#ref-9">[9]</a> The gap is an open question about long-term viability.</p>
         </div>
         <div class="finding-card">
           <div class="finding-num mb-2">Finding 03</div>
-          <p class="font-semibold text-slate-900 mb-2">Link Lock URL-fragment design is the highest-severity attack surface specific to the architecture.</p>
-          <p class="text-sm text-slate-600">The 2018 ENS Lyon analysis of CryptPad-style URL-fragment key sharing<a class="cite" href="#ref-10">[10]</a> documents the leakage paths; the same vector applies to Fileverse, modelled at ~3% silent confidentiality breach across share-heavy corpora.</p>
+          <p class="font-semibold mb-2" style="color:var(--ink)">Shareable links embed encryption keys inside the URL — any URL logger can expose a document's key.</p>
+          <p class="text-sm" style="color:var(--muted)">Fileverse's share links embed encryption keys inside the URL itself.<a class="cite" href="#ref-1">[1]</a> Any system that logs or forwards URLs — browser history, server logs, link-preview services — can expose a document's key. A 2018 analysis of this URL-fragment key-sharing pattern documents the leakage paths in detail.<a class="cite" href="#ref-10">[10]</a></p>
         </div>
         <div class="finding-card">
           <div class="finding-num mb-2">Finding 04</div>
-          <p class="font-semibold text-slate-900 mb-2">Ethereum-mainnet registry default is misaligned with the document-heavy write pattern.</p>
-          <p class="text-sm text-slate-600">Per-document anchoring costs run $1–$10+ at observed mainnet gas prices<a class="cite" href="#ref-11">[11]</a>; Gnosis Chain is the technically appropriate default and is already referenced in the collaboration-server<a class="cite" href="#ref-2">[2]</a>.</p>
+          <p class="font-semibold mb-2" style="color:var(--ink)">Recording documents on Ethereum mainnet costs $1–$10+ per file — Gnosis Chain is the coherent default.</p>
+          <p class="text-sm" style="color:var(--muted)">Per-document anchoring on Ethereum costs $1–$10+ at observed mainnet gas prices.<a class="cite" href="#ref-11">[11]</a> The project already uses Gnosis Chain (a low-cost Ethereum sidechain) for its collaboration server.<a class="cite" href="#ref-2">[2]</a> That makes Gnosis Chain the technically coherent default for the content registry too — this is a configuration-level observation, not a structural limitation.</p>
         </div>
-        <div class="finding-card md:col-span-2">
+        <div class="finding-card" style="grid-column: 1 / -1;">
           <div class="finding-num mb-2">Finding 05</div>
-          <p class="font-semibold text-slate-900 mb-2">The cryptographic stack is incompletely audited as of the data cutoff.</p>
-          <p class="text-sm text-slate-600">Only the collaboration-server is under Dedalo audit<a class="cite" href="#ref-2">[2]</a>; the <code>@fileverse/crypto</code> library implementing the triple-lock walk-away scheme has no public audit report. Per Trail of Bits' guidance<a class="cite" href="#ref-12">[12]</a>, cryptographic primitives warrant audits at least every 18 months — this is the cleanest production-readiness gap.</p>
+          <p class="font-semibold mb-2" style="color:var(--ink)">The collaboration server is audited — the encryption library that wraps the keys is not.</p>
+          <p class="text-sm" style="color:var(--muted)">The real-time collaboration server has been audited by a third-party security firm (Dedalo).<a class="cite" href="#ref-2">[2]</a> The <code>@fileverse/crypto</code> library — which implements the triple-lock walk-away encryption scheme — has no public audit report as of the data cutoff. Cryptographic libraries warrant audits at least every 18 months per published guidance from Trail of Bits.<a class="cite" href="#ref-12">[12]</a></p>
         </div>
       </div>
     </section>
@@ -326,6 +338,24 @@
         <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 3</span>
         <h2 class="text-2xl font-bold text-slate-900">Background &amp; Context</h2>
       </div>
+        <figure class="my-8">
+          <div class="mermaid rounded-md border border-slate-200 p-4 bg-white overflow-x-auto text-sm">
+            timeline
+              title Fileverse — Key Milestones
+              2021 : Project inception
+              2022 : dDocs editor launched (local-first document editor)
+                   : Multi-provider IPFS persistence layer
+              2023 : Gnosis Chain content registry
+                   : Real-time collaboration relay
+              2024 : dSheets v0.3 — onchain-aware spreadsheet
+                   : Walk-away encryption repository published
+                   : Collaboration-server security audit (Dedalo)
+                   : Skiff shuts down — E2EE workspace market shifts
+              2025 : Local LLM integration (beta)
+              2026 : Data cutoff · April 2026
+          </div>
+          <figcaption class="text-xs mt-2 text-center" style="color:var(--muted)">Figure 1 — Fileverse development timeline as of data cutoff. Milestone dates derived from GitHub commit history and public announcements.</figcaption>
+        </figure>
       <article class="prose-body">
         <h3>Why this protocol exists now</h3>
         <p>Fileverse exists at the intersection of three secular trends that have only recently converged: a regulatory environment where custodial cloud productivity tools have become a measurable risk vector, a technical environment where local-first CRDT collaboration and content-addressed storage are simultaneously mature and cheap, and a market environment where Web3-native users have begun authoring more durable artifacts (DAO governance, treasury operations, conference programming) than wallets and dApps were originally designed to host.</p>
@@ -358,6 +388,20 @@
         <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 4</span>
         <h2 class="text-2xl font-bold text-slate-900">Mechanism Analysis</h2>
       </div>
+        <figure class="my-8">
+          <div class="mermaid rounded-md border border-slate-200 p-4 bg-white overflow-x-auto">
+            flowchart LR
+              A["📝 Browser Editor\ndDocs / dSheets"] --> B["🔑 AES Key\nGenerated per file"]
+              B --> C["🔒 Client-side\nEncryption"]
+              C --> D["📦 IPFS Upload\nPinata · Filebase\nWeb3.Storage"]
+              D --> E["#️⃣ Content Hash\nCID"]
+              E --> F["⛓️ Gnosis Chain\nContent Registry"]
+              F --> G["✅ Permanent\nContent Address"]
+              style A fill:#eef2f5,stroke:#0471a9,color:#023750
+              style G fill:#eef2f5,stroke:#0471a9,color:#023750
+          </div>
+          <figcaption class="text-xs mt-2 text-center" style="color:var(--muted)">Figure 2 — File lifecycle from browser to permanent content address. Encryption happens client-side; no plaintext leaves the browser.</figcaption>
+        </figure>
       <article class="prose-body">
         <h3>4.1 Core mechanism — encrypted local-first CRDT sync</h3>
         <p>Fileverse's central technical primitive is encrypted local-first collaborative editing. Documents live in the client (IndexedDB), are merged via Yjs CRDTs, and are relayed by a stateless WebSocket server that never sees plaintext. Persistence is delegated to IPFS pinning, with smart contracts acting as a content registry.</p>
@@ -373,6 +417,18 @@
         <h3>4.3 Resolution / settlement layer</h3>
         <p>In Fileverse, "settlement" refers to finalizing a document version — the moment an edit transitions from ephemeral CRDT updates in the relay to a durable, shareable artifact. Three triggers are observable. <strong>Idle persistence</strong> occurs when the collaboration server pushes the latest state to IPFS once the RTC session ends and clears its memory<a class="cite" href="#ref-2">[2]</a>; this is the default settlement path. <strong>Explicit publish</strong> is exposed in the dDocs UI as a "publish to IPFS" button which forces the client to encrypt the current Y.Doc, upload to IPFS via the storage service, and update the on-chain registry. <strong>Walk-away export</strong> is a recovery flow where users supply portal address plus RSA key material to retrieve and decrypt content independently of the dDocs frontend<a class="cite" href="#ref-1">[1]</a>.</p>
         <p>Authorization at the settlement layer is precise. Any session participant with <code>file_key</code> can push updates to the relay; only a UCAN holder can pin to IPFS; only the portal owner (or delegate) can update the on-chain CID; anyone holding any of the three lock private keys can decrypt via walk-away. The four-way decomposition is a defensible separation of concerns, and the walk-away path's operator-independence is what makes the AGPL portability story functional rather than theatrical.</p>
+        <figure class="my-8">
+          <div class="mermaid rounded-md border border-slate-200 p-4 bg-white overflow-x-auto">
+            graph TD
+              AES["🔑 AES File Key\nEncrypts the file contents"]
+              AES --> PL["🏛️ Portal Lock\nWrapped by portal keypair\nPortal can revoke this copy"]
+              AES --> OL["👤 Owner Lock\nWrapped by owner keypair\nSurvives portal shutdown"]
+              AES --> LL["🔗 Link Lock\nEmbedded in share URL\nURL logs = key exposure"]
+              style AES fill:#0471a9,color:#fff,stroke:#023750
+              style LL fill:#fef3c7,stroke:#d97706,color:#78350f
+          </div>
+          <figcaption class="text-xs mt-2 text-center" style="color:var(--muted)">Figure 3 — Three-lock key model. Each lock is an independent encryption of the same AES key. The Link Lock (amber) embeds the key in the share URL.</figcaption>
+        </figure>
         <p>Failure modes at settlement are bounded but real. If all three IPFS providers are unreachable, the Pinata to Filebase to Web3.Storage fallback chain<a class="cite" href="#ref-3">[3]</a> has no further escape, and a self-hosted IPFS pin is the only out. If a registry update fails after a successful pin, readers see the previous version until idempotent retry succeeds. Concurrent on-chain updates resolve by last-writer-wins at the EVM level; the CRDT history on IPFS may diverge from the registry pointer until reconciled.</p>
 
         <h3>4.4 Capital flow and authorization (UCAN)</h3>
@@ -401,6 +457,15 @@
       <article class="prose-body">
         <p>We position Fileverse against eight peers selected for analytical relevance to its design choices, not market share alone. The selection set spans the closest open-source E2EE office analog (CryptPad<a class="cite" href="#ref-25">[25]</a>), the integrated-ecosystem custodial-but-blind benchmark (Proton Docs/Sheets<a class="cite" href="#ref-26">[26]</a>), the defunct historical precedent (Skiff<a class="cite" href="#ref-8">[8]</a>), the local-first encrypted Notion-alternative cohort (Anytype<a class="cite" href="#ref-27">[27]</a> and AFFiNE<a class="cite" href="#ref-28">[28]</a>), the dominant non-Google self-hosted procurement comparator (ONLYOFFICE Docs<a class="cite" href="#ref-29">[29]</a>), the architectural alternative to Fileverse's lock model (Lit Protocol<a class="cite" href="#ref-30">[30]</a>), and the analyst-tool substitute that absorbs "see live contract state" workflows (Dune Analytics<a class="cite" href="#ref-31">[31]</a>).</p>
       </article>
+
+        <!-- Quadrant Chart -->
+        <div class="mb-10">
+          <h3 class="mb-1" style="font-family:'Geist Mono',monospace;color:var(--accent);font-size:1.1rem;font-weight:600;">Positioning Map</h3>
+          <p class="text-sm mb-4" style="color:var(--muted)">Peers plotted by decentralization level (x-axis) and collaboration maturity (y-axis). Scores derived from the comparison matrix below.</p>
+          <div style="position:relative;height:380px;">
+            <canvas id="landscapeChart"></canvas>
+          </div>
+        </div>
 
       <h3 class="font-semibold text-lg text-slate-900 mt-8 mb-4">5.1 Comparison matrix</h3>
       <div class="overflow-x-auto border border-slate-200 rounded-lg bg-white">
@@ -523,6 +588,57 @@
         <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 7</span>
         <h2 class="text-2xl font-bold text-slate-900">Open Questions &amp; What Would Change Our View</h2>
       </div>
+        <!-- Open Questions — Categorized Cards -->
+        <div class="mb-8 space-y-6">
+
+          <div>
+            <div class="text-xs uppercase tracking-widest font-semibold mb-3" style="color:var(--accent);font-family:'Geist Mono',monospace;letter-spacing:0.1em;">Technical</div>
+            <div class="space-y-3">
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">Does the walk-away scheme hold under a hostile portal operator?</p>
+                <p class="text-sm" style="color:var(--muted)">The Owner Lock guarantees key recovery if the portal shuts down cooperatively. An actively hostile portal could refuse to serve IPFS CIDs. Whether the scheme survives that scenario without a separate resolver is not documented.</p>
+              </div>
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">What is IPFS retrieval latency at P95 for a cold CID?</p>
+                <p class="text-sm" style="color:var(--muted)">Multi-provider pinning keeps latency low for pinned content. The open question is what happens to unpinned or long-tail CIDs — the SIGCOMM 2022 data shows DHT retrieval is unreliable at the tail.<a class="cite" href="#ref-17">[17]</a></p>
+              </div>
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">When will the <code>@fileverse/crypto</code> library receive a third-party audit?</p>
+                <p class="text-sm" style="color:var(--muted)">The collaboration server is audited. The encryption library that implements key wrapping has no public audit report as of the data cutoff. Timeline and scope of any planned audit have not been disclosed.</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs uppercase tracking-widest font-semibold mb-3" style="color:var(--accent);font-family:'Geist Mono',monospace;letter-spacing:0.1em;">Economic</div>
+            <div class="space-y-3">
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">What is the path from the current user base to ~100,000 paying users?</p>
+                <p class="text-sm" style="color:var(--muted)">The unit-economics model shows break-even at scale. The growth mechanism — viral loops, developer ecosystem, DAO community expansion — has not been detailed in any public roadmap as of the data cutoff.</p>
+              </div>
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">Will the pinning vendor layer remain stable on annual timescales?</p>
+                <p class="text-sm" style="color:var(--muted)">Web3.Storage's 2024 transition to a paid model under the Storacha brand showed that pinning vendors reprice on short timescales.<a class="cite" href="#ref-21">[21]</a> Multi-provider architecture reduces single-vendor risk but does not eliminate vendor-side cost shocks.</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs uppercase tracking-widest font-semibold mb-3" style="color:var(--accent);font-family:'Geist Mono',monospace;letter-spacing:0.1em;">Governance</div>
+            <div class="space-y-3">
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">What legal entity structure will Fileverse adopt?</p>
+                <p class="text-sm" style="color:var(--muted)">Proton and Anytype both formalized mission alignment through Swiss non-profit foundation structures.<a class="cite" href="#ref-22">[22]</a> Fileverse's entity structure has not been disclosed. A formal foundation structure would strengthen the walk-away guarantee beyond what the AGPL license alone provides.</p>
+              </div>
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">Who controls the Gnosis Chain registry contract keys?</p>
+                <p class="text-sm" style="color:var(--muted)">The content registry anchors document existence onchain. If the registry contract is upgradeable and controlled by a multisig, key-holder composition matters for the permanence guarantee. This has not been documented publicly.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
       <article class="prose-body">
         <h3>7.1 Bear / Base / Bull cases</h3>
       </article>
@@ -697,6 +813,34 @@
 </div>
 
 <script>
+  // Break-even annotation plugin for econChart
+  var breakEvenPlugin = {
+    id: 'breakEvenLine',
+    afterDraw: function(chart) {
+      if (chart.canvas.id !== 'econChart') return;
+      var yScale = chart.scales.y;
+      if (!yScale) return;
+      var breakEvenValue = 670000;
+      var yPixel = yScale.getPixelForValue(breakEvenValue);
+      if (yPixel < yScale.top || yPixel > yScale.bottom) return;
+      var c = chart.ctx;
+      c.save();
+      c.beginPath();
+      c.setLineDash([8, 4]);
+      c.strokeStyle = '#d97706';
+      c.lineWidth = 2;
+      c.moveTo(chart.chartArea.left, yPixel);
+      c.lineTo(chart.chartArea.right, yPixel);
+      c.stroke();
+      c.setLineDash([]);
+      c.font = '600 11px "Geist Mono", monospace';
+      c.fillStyle = '#d97706';
+      c.fillText('Break-even (~100K paying users) ≈ $670K/mo', chart.chartArea.left + 6, yPixel - 6);
+      c.restore();
+    }
+  };
+  Chart.register(breakEvenPlugin);
+
   document.addEventListener('DOMContentLoaded', function () {
     var canvas = document.getElementById('econChart');
     if (!canvas || typeof Chart === 'undefined') return;
@@ -709,15 +853,15 @@
           {
             label: 'MRR (USD/mo)',
             data: [3700, 70400, 918000],
-            backgroundColor: 'rgba(29, 78, 216, 0.78)',
-            borderColor: 'rgba(29, 78, 216, 1)',
+            backgroundColor: 'rgba(4, 113, 169, 0.78)',
+            borderColor: 'rgba(4, 113, 169, 1)',
             borderWidth: 1
           },
           {
             label: 'Infra COGS (post-discount)',
             data: [3150, 60000, 550000],
-            backgroundColor: 'rgba(244, 114, 182, 0.78)',
-            borderColor: 'rgba(190, 24, 93, 1)',
+            backgroundColor: 'rgba(209, 108, 50, 0.78)',
+            borderColor: 'rgba(180, 90, 20, 1)',
             borderWidth: 1
           },
           {
@@ -757,6 +901,84 @@
         }
       }
     });
+
+    // Landscape quadrant chart
+    var lCanvas = document.getElementById('landscapeChart');
+    if (lCanvas && typeof Chart !== 'undefined') {
+      var peers = [
+        { label: 'Fileverse',       x: 9, y: 6 },
+        { label: 'CryptPad',        x: 8, y: 7 },
+        { label: 'Standard Notes',  x: 6, y: 3 },
+        { label: 'Anytype',         x: 5, y: 5 },
+        { label: 'Proton Drive',    x: 4, y: 5 },
+        { label: 'AFFiNE',          x: 5, y: 6 },
+        { label: 'Notion',          x: 1, y: 9 },
+        { label: 'Google Docs',     x: 1, y: 10 },
+        { label: 'Skiff (defunct)', x: 5, y: 6 }
+      ];
+      new Chart(lCanvas.getContext('2d'), {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Peers',
+            data: peers.map(function(p){ return { x: p.x, y: p.y }; }),
+            backgroundColor: peers.map(function(p){
+              return p.label === 'Fileverse' ? 'rgba(4,113,169,0.9)' : 'rgba(4,113,169,0.25)';
+            }),
+            borderColor: peers.map(function(p){
+              return p.label === 'Fileverse' ? '#0471a9' : 'rgba(4,113,169,0.5)';
+            }),
+            pointRadius: peers.map(function(p){ return p.label === 'Fileverse' ? 10 : 7; }),
+            pointHoverRadius: 12,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              min: 0, max: 11,
+              title: { display: true, text: 'Decentralization →', color: '#023750', font: { weight: '600' } },
+              grid: { color: 'rgba(4,113,169,0.08)' }
+            },
+            y: {
+              min: 0, max: 11,
+              title: { display: true, text: 'Collaboration Maturity →', color: '#023750', font: { weight: '600' } },
+              grid: { color: 'rgba(4,113,169,0.08)' }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  var idx = ctx.dataIndex;
+                  return peers[idx].label + ' — Decentralization: ' + peers[idx].x + '/10, Collaboration: ' + peers[idx].y + '/10';
+                }
+              }
+            }
+          },
+          animation: {
+            onComplete: function() {
+              var chart = this;
+              var c = chart.ctx;
+              c.save();
+              c.font = '600 11px "Geist Mono", monospace';
+              c.fillStyle = '#023750';
+              chart.data.datasets[0].data.forEach(function(point, i) {
+                var meta = chart.getDatasetMeta(0);
+                var pt = meta.data[i];
+                var xOff = peers[i].label === 'Fileverse' ? -8 : 10;
+                var yOff = peers[i].label === 'Fileverse' ? -14 : -10;
+                c.fillText(peers[i].label, pt.x + xOff, pt.y + yOff);
+              });
+              c.restore();
+            }
+          }
+        }
+      });
+    }
   });
 </script>
 
