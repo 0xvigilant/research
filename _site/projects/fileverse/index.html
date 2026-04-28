@@ -388,6 +388,20 @@
         <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 4</span>
         <h2 class="text-2xl font-bold text-slate-900">Mechanism Analysis</h2>
       </div>
+        <figure class="my-8">
+          <div class="mermaid rounded-md border border-slate-200 p-4 bg-white overflow-x-auto">
+            flowchart LR
+              A["📝 Browser Editor\ndDocs / dSheets"] --> B["🔑 AES Key\nGenerated per file"]
+              B --> C["🔒 Client-side\nEncryption"]
+              C --> D["📦 IPFS Upload\nPinata · Filebase\nWeb3.Storage"]
+              D --> E["#️⃣ Content Hash\nCID"]
+              E --> F["⛓️ Gnosis Chain\nContent Registry"]
+              F --> G["✅ Permanent\nContent Address"]
+              style A fill:#eef2f5,stroke:#0471a9,color:#023750
+              style G fill:#eef2f5,stroke:#0471a9,color:#023750
+          </div>
+          <figcaption class="text-xs mt-2 text-center" style="color:var(--muted)">Figure 2 — File lifecycle from browser to permanent content address. Encryption happens client-side; no plaintext leaves the browser.</figcaption>
+        </figure>
       <article class="prose-body">
         <h3>4.1 Core mechanism — encrypted local-first CRDT sync</h3>
         <p>Fileverse's central technical primitive is encrypted local-first collaborative editing. Documents live in the client (IndexedDB), are merged via Yjs CRDTs, and are relayed by a stateless WebSocket server that never sees plaintext. Persistence is delegated to IPFS pinning, with smart contracts acting as a content registry.</p>
@@ -403,6 +417,18 @@
         <h3>4.3 Resolution / settlement layer</h3>
         <p>In Fileverse, "settlement" refers to finalizing a document version — the moment an edit transitions from ephemeral CRDT updates in the relay to a durable, shareable artifact. Three triggers are observable. <strong>Idle persistence</strong> occurs when the collaboration server pushes the latest state to IPFS once the RTC session ends and clears its memory<a class="cite" href="#ref-2">[2]</a>; this is the default settlement path. <strong>Explicit publish</strong> is exposed in the dDocs UI as a "publish to IPFS" button which forces the client to encrypt the current Y.Doc, upload to IPFS via the storage service, and update the on-chain registry. <strong>Walk-away export</strong> is a recovery flow where users supply portal address plus RSA key material to retrieve and decrypt content independently of the dDocs frontend<a class="cite" href="#ref-1">[1]</a>.</p>
         <p>Authorization at the settlement layer is precise. Any session participant with <code>file_key</code> can push updates to the relay; only a UCAN holder can pin to IPFS; only the portal owner (or delegate) can update the on-chain CID; anyone holding any of the three lock private keys can decrypt via walk-away. The four-way decomposition is a defensible separation of concerns, and the walk-away path's operator-independence is what makes the AGPL portability story functional rather than theatrical.</p>
+        <figure class="my-8">
+          <div class="mermaid rounded-md border border-slate-200 p-4 bg-white overflow-x-auto">
+            graph TD
+              AES["🔑 AES File Key\nEncrypts the file contents"]
+              AES --> PL["🏛️ Portal Lock\nWrapped by portal keypair\nPortal can revoke this copy"]
+              AES --> OL["👤 Owner Lock\nWrapped by owner keypair\nSurvives portal shutdown"]
+              AES --> LL["🔗 Link Lock\nEmbedded in share URL\nURL logs = key exposure"]
+              style AES fill:#0471a9,color:#fff,stroke:#023750
+              style LL fill:#fef3c7,stroke:#d97706,color:#78350f
+          </div>
+          <figcaption class="text-xs mt-2 text-center" style="color:var(--muted)">Figure 3 — Three-lock key model. Each lock is an independent encryption of the same AES key. The Link Lock (amber) embeds the key in the share URL.</figcaption>
+        </figure>
         <p>Failure modes at settlement are bounded but real. If all three IPFS providers are unreachable, the Pinata to Filebase to Web3.Storage fallback chain<a class="cite" href="#ref-3">[3]</a> has no further escape, and a self-hosted IPFS pin is the only out. If a registry update fails after a successful pin, readers see the previous version until idempotent retry succeeds. Concurrent on-chain updates resolve by last-writer-wins at the EVM level; the CRDT history on IPFS may diverge from the registry pointer until reconciled.</p>
 
         <h3>4.4 Capital flow and authorization (UCAN)</h3>
