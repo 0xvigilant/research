@@ -588,6 +588,57 @@
         <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 7</span>
         <h2 class="text-2xl font-bold text-slate-900">Open Questions &amp; What Would Change Our View</h2>
       </div>
+        <!-- Open Questions — Categorized Cards -->
+        <div class="mb-8 space-y-6">
+
+          <div>
+            <div class="text-xs uppercase tracking-widest font-semibold mb-3" style="color:var(--accent);font-family:'Geist Mono',monospace;letter-spacing:0.1em;">Technical</div>
+            <div class="space-y-3">
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">Does the walk-away scheme hold under a hostile portal operator?</p>
+                <p class="text-sm" style="color:var(--muted)">The Owner Lock guarantees key recovery if the portal shuts down cooperatively. An actively hostile portal could refuse to serve IPFS CIDs. Whether the scheme survives that scenario without a separate resolver is not documented.</p>
+              </div>
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">What is IPFS retrieval latency at P95 for a cold CID?</p>
+                <p class="text-sm" style="color:var(--muted)">Multi-provider pinning keeps latency low for pinned content. The open question is what happens to unpinned or long-tail CIDs — the SIGCOMM 2022 data shows DHT retrieval is unreliable at the tail.<a class="cite" href="#ref-17">[17]</a></p>
+              </div>
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">When will the <code>@fileverse/crypto</code> library receive a third-party audit?</p>
+                <p class="text-sm" style="color:var(--muted)">The collaboration server is audited. The encryption library that implements key wrapping has no public audit report as of the data cutoff. Timeline and scope of any planned audit have not been disclosed.</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs uppercase tracking-widest font-semibold mb-3" style="color:var(--accent);font-family:'Geist Mono',monospace;letter-spacing:0.1em;">Economic</div>
+            <div class="space-y-3">
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">What is the path from the current user base to ~100,000 paying users?</p>
+                <p class="text-sm" style="color:var(--muted)">The unit-economics model shows break-even at scale. The growth mechanism — viral loops, developer ecosystem, DAO community expansion — has not been detailed in any public roadmap as of the data cutoff.</p>
+              </div>
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">Will the pinning vendor layer remain stable on annual timescales?</p>
+                <p class="text-sm" style="color:var(--muted)">Web3.Storage's 2024 transition to a paid model under the Storacha brand showed that pinning vendors reprice on short timescales.<a class="cite" href="#ref-21">[21]</a> Multi-provider architecture reduces single-vendor risk but does not eliminate vendor-side cost shocks.</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs uppercase tracking-widest font-semibold mb-3" style="color:var(--accent);font-family:'Geist Mono',monospace;letter-spacing:0.1em;">Governance</div>
+            <div class="space-y-3">
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">What legal entity structure will Fileverse adopt?</p>
+                <p class="text-sm" style="color:var(--muted)">Proton and Anytype both formalized mission alignment through Swiss non-profit foundation structures.<a class="cite" href="#ref-22">[22]</a> Fileverse's entity structure has not been disclosed. A formal foundation structure would strengthen the walk-away guarantee beyond what the AGPL license alone provides.</p>
+              </div>
+              <div class="finding-card">
+                <p class="font-semibold text-sm mb-1" style="color:var(--ink)">Who controls the Gnosis Chain registry contract keys?</p>
+                <p class="text-sm" style="color:var(--muted)">The content registry anchors document existence onchain. If the registry contract is upgradeable and controlled by a multisig, key-holder composition matters for the permanence guarantee. This has not been documented publicly.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
       <article class="prose-body">
         <h3>7.1 Bear / Base / Bull cases</h3>
       </article>
