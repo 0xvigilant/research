@@ -278,28 +278,28 @@
       <div class="grid md:grid-cols-2 gap-4">
         <div class="finding-card">
           <div class="finding-num mb-2">Finding 01</div>
-          <p class="font-semibold text-slate-900 mb-2">Decentralization-by-default of persistence, not encryption, is the most differentiated property.</p>
-          <p class="text-sm text-slate-600">Multi-provider IPFS pinning plus an Ethereum/Gnosis content registry, paired with AGPL-3.0 licensing<a class="cite" href="#ref-4">[4]</a>, makes the codebase portable beyond the operating entity — a structural answer to the Skiff sunset failure mode<a class="cite" href="#ref-8">[8]</a>.</p>
+          <p class="font-semibold mb-2" style="color:var(--ink)">Files are stored on IPFS and anchored on a public blockchain — the data can outlive the company.</p>
+          <p class="text-sm" style="color:var(--muted)">Fileverse stores files on IPFS (a peer-to-peer file storage network) and records content hashes on a public blockchain.<a class="cite" href="#ref-3">[3]</a> The codebase is licensed AGPL-3.0, which requires any fork to publish its source code.<a class="cite" href="#ref-4">[4]</a> This is the structural property that distinguishes Fileverse from Skiff, which shut down in 2024 without an equivalent portability guarantee.<a class="cite" href="#ref-8">[8]</a></p>
         </div>
         <div class="finding-card">
           <div class="finding-num mb-2">Finding 02</div>
-          <p class="font-semibold text-slate-900 mb-2">The model is structurally subsidy-dependent until ~100,000 paying users.</p>
-          <p class="text-sm text-slate-600">That threshold is roughly an order of magnitude above CryptPad's published 5,000 paying subscribers across ~280,000 registered after a decade of operation<a class="cite" href="#ref-9">[9]</a>. This is the report's primary falsifiable claim.</p>
+          <p class="font-semibold mb-2" style="color:var(--ink)">Sustaining operations requires roughly 100,000 paying users — about 20× more than CryptPad reached in a decade.</p>
+          <p class="text-sm" style="color:var(--muted)">Under the unit-economics model we apply, break-even requires ~100,000 paying users.<a class="cite" href="#ref-9">[9]</a> CryptPad (a comparable open-source encrypted workspace) reached ~5,000 paying subscribers across 280,000 registered users after ten years of operation.<a class="cite" href="#ref-9">[9]</a> The gap is an open question about long-term viability.</p>
         </div>
         <div class="finding-card">
           <div class="finding-num mb-2">Finding 03</div>
-          <p class="font-semibold text-slate-900 mb-2">Link Lock URL-fragment design is the highest-severity attack surface specific to the architecture.</p>
-          <p class="text-sm text-slate-600">The 2018 ENS Lyon analysis of CryptPad-style URL-fragment key sharing<a class="cite" href="#ref-10">[10]</a> documents the leakage paths; the same vector applies to Fileverse, modelled at ~3% silent confidentiality breach across share-heavy corpora.</p>
+          <p class="font-semibold mb-2" style="color:var(--ink)">Shareable links embed encryption keys inside the URL — any URL logger can expose a document's key.</p>
+          <p class="text-sm" style="color:var(--muted)">Fileverse's share links embed encryption keys inside the URL itself.<a class="cite" href="#ref-1">[1]</a> Any system that logs or forwards URLs — browser history, server logs, link-preview services — can expose a document's key. A 2018 analysis of this URL-fragment key-sharing pattern documents the leakage paths in detail.<a class="cite" href="#ref-10">[10]</a></p>
         </div>
         <div class="finding-card">
           <div class="finding-num mb-2">Finding 04</div>
-          <p class="font-semibold text-slate-900 mb-2">Ethereum-mainnet registry default is misaligned with the document-heavy write pattern.</p>
-          <p class="text-sm text-slate-600">Per-document anchoring costs run $1–$10+ at observed mainnet gas prices<a class="cite" href="#ref-11">[11]</a>; Gnosis Chain is the technically appropriate default and is already referenced in the collaboration-server<a class="cite" href="#ref-2">[2]</a>.</p>
+          <p class="font-semibold mb-2" style="color:var(--ink)">Recording documents on Ethereum mainnet costs $1–$10+ per file — Gnosis Chain is the coherent default.</p>
+          <p class="text-sm" style="color:var(--muted)">Per-document anchoring on Ethereum costs $1–$10+ at observed mainnet gas prices.<a class="cite" href="#ref-11">[11]</a> The project already uses Gnosis Chain (a low-cost Ethereum sidechain) for its collaboration server.<a class="cite" href="#ref-2">[2]</a> That makes Gnosis Chain the technically coherent default for the content registry too — this is a configuration-level observation, not a structural limitation.</p>
         </div>
-        <div class="finding-card md:col-span-2">
+        <div class="finding-card" style="grid-column: 1 / -1;">
           <div class="finding-num mb-2">Finding 05</div>
-          <p class="font-semibold text-slate-900 mb-2">The cryptographic stack is incompletely audited as of the data cutoff.</p>
-          <p class="text-sm text-slate-600">Only the collaboration-server is under Dedalo audit<a class="cite" href="#ref-2">[2]</a>; the <code>@fileverse/crypto</code> library implementing the triple-lock walk-away scheme has no public audit report. Per Trail of Bits' guidance<a class="cite" href="#ref-12">[12]</a>, cryptographic primitives warrant audits at least every 18 months — this is the cleanest production-readiness gap.</p>
+          <p class="font-semibold mb-2" style="color:var(--ink)">The collaboration server is audited — the encryption library that wraps the keys is not.</p>
+          <p class="text-sm" style="color:var(--muted)">The real-time collaboration server has been audited by a third-party security firm (Dedalo).<a class="cite" href="#ref-2">[2]</a> The <code>@fileverse/crypto</code> library — which implements the triple-lock walk-away encryption scheme — has no public audit report as of the data cutoff. Cryptographic libraries warrant audits at least every 18 months per published guidance from Trail of Bits.<a class="cite" href="#ref-12">[12]</a></p>
         </div>
       </div>
     </section>
