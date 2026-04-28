@@ -762,6 +762,34 @@
 </div>
 
 <script>
+  // Break-even annotation plugin for econChart
+  var breakEvenPlugin = {
+    id: 'breakEvenLine',
+    afterDraw: function(chart) {
+      if (chart.canvas.id !== 'econChart') return;
+      var yScale = chart.scales.y;
+      if (!yScale) return;
+      var breakEvenValue = 670000;
+      var yPixel = yScale.getPixelForValue(breakEvenValue);
+      if (yPixel < yScale.top || yPixel > yScale.bottom) return;
+      var c = chart.ctx;
+      c.save();
+      c.beginPath();
+      c.setLineDash([8, 4]);
+      c.strokeStyle = '#d97706';
+      c.lineWidth = 2;
+      c.moveTo(chart.chartArea.left, yPixel);
+      c.lineTo(chart.chartArea.right, yPixel);
+      c.stroke();
+      c.setLineDash([]);
+      c.font = '600 11px "Geist Mono", monospace';
+      c.fillStyle = '#d97706';
+      c.fillText('Break-even (~100K paying users) ≈ $670K/mo', chart.chartArea.left + 6, yPixel - 6);
+      c.restore();
+    }
+  };
+  Chart.register(breakEvenPlugin);
+
   document.addEventListener('DOMContentLoaded', function () {
     var canvas = document.getElementById('econChart');
     if (!canvas || typeof Chart === 'undefined') return;
@@ -774,15 +802,15 @@
           {
             label: 'MRR (USD/mo)',
             data: [3700, 70400, 918000],
-            backgroundColor: 'rgba(29, 78, 216, 0.78)',
-            borderColor: 'rgba(29, 78, 216, 1)',
+            backgroundColor: 'rgba(4, 113, 169, 0.78)',
+            borderColor: 'rgba(4, 113, 169, 1)',
             borderWidth: 1
           },
           {
             label: 'Infra COGS (post-discount)',
             data: [3150, 60000, 550000],
-            backgroundColor: 'rgba(244, 114, 182, 0.78)',
-            borderColor: 'rgba(190, 24, 93, 1)',
+            backgroundColor: 'rgba(209, 108, 50, 0.78)',
+            borderColor: 'rgba(180, 90, 20, 1)',
             borderWidth: 1
           },
           {
