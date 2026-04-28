@@ -7,6 +7,18 @@
 <meta name="description" content="Fileverse is an open-source, end-to-end encrypted productivity suite combining a local-first dDocs editor, an onchain-aware dSheets, and multi-provider IPFS persistence with an Ethereum/Gnosis content registry." />
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: {
+    primaryColor: '#0471a9',
+    primaryTextColor: '#023750',
+    lineColor: '#0471a9',
+    edgeLabelBackground: '#f8f9fa',
+    fontSize: '14px'
+  }
+});</script>
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root {
@@ -326,6 +338,24 @@
         <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Section 3</span>
         <h2 class="text-2xl font-bold text-slate-900">Background &amp; Context</h2>
       </div>
+        <figure class="my-8">
+          <div class="mermaid rounded-md border border-slate-200 p-4 bg-white overflow-x-auto text-sm">
+            timeline
+              title Fileverse — Key Milestones
+              2021 : Project inception
+              2022 : dDocs editor launched (local-first document editor)
+                   : Multi-provider IPFS persistence layer
+              2023 : Gnosis Chain content registry
+                   : Real-time collaboration relay
+              2024 : dSheets v0.3 — onchain-aware spreadsheet
+                   : Walk-away encryption repository published
+                   : Collaboration-server security audit (Dedalo)
+                   : Skiff shuts down — E2EE workspace market shifts
+              2025 : Local LLM integration (beta)
+              2026 : Data cutoff · April 2026
+          </div>
+          <figcaption class="text-xs mt-2 text-center" style="color:var(--muted)">Figure 1 — Fileverse development timeline as of data cutoff. Milestone dates derived from GitHub commit history and public announcements.</figcaption>
+        </figure>
       <article class="prose-body">
         <h3>Why this protocol exists now</h3>
         <p>Fileverse exists at the intersection of three secular trends that have only recently converged: a regulatory environment where custodial cloud productivity tools have become a measurable risk vector, a technical environment where local-first CRDT collaboration and content-addressed storage are simultaneously mature and cheap, and a market environment where Web3-native users have begun authoring more durable artifacts (DAO governance, treasury operations, conference programming) than wallets and dApps were originally designed to host.</p>
