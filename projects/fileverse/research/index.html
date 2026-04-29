@@ -12,8 +12,11 @@
   startOnLoad: true,
   theme: 'base',
   themeVariables: {
-    primaryColor: '#0471a9',
+    primaryColor: '#dceefa',
     primaryTextColor: '#023750',
+    primaryBorderColor: '#0471a9',
+    secondaryColor: '#cce6f5',
+    tertiaryColor: '#edf6fc',
     lineColor: '#0471a9',
     edgeLabelBackground: '#f8f9fa',
     fontSize: '14px'
@@ -391,12 +394,12 @@
         <figure class="my-8">
           <div class="mermaid rounded-md border border-slate-200 p-4 bg-white overflow-x-auto">
             flowchart LR
-              A["📝 Browser Editor\ndDocs / dSheets"] --> B["🔑 AES Key\nGenerated per file"]
-              B --> C["🔒 Client-side\nEncryption"]
-              C --> D["📦 IPFS Upload\nPinata · Filebase\nWeb3.Storage"]
-              D --> E["#️⃣ Content Hash\nCID"]
-              E --> F["⛓️ Gnosis Chain\nContent Registry"]
-              F --> G["✅ Permanent\nContent Address"]
+              A["Browser Editor\ndDocs / dSheets"] --> B["AES Key\nGenerated per file"]
+              B --> C["Client-side\nEncryption"]
+              C --> D["IPFS Upload\nPinata · Filebase\nWeb3.Storage"]
+              D --> E["Content Hash\nCID"]
+              E --> F["Gnosis Chain\nContent Registry"]
+              F --> G["Permanent\nContent Address"]
               style A fill:#eef2f5,stroke:#0471a9,color:#023750
               style G fill:#eef2f5,stroke:#0471a9,color:#023750
           </div>
@@ -420,10 +423,10 @@
         <figure class="my-8">
           <div class="mermaid rounded-md border border-slate-200 p-4 bg-white overflow-x-auto">
             graph TD
-              AES["🔑 AES File Key\nEncrypts the file contents"]
-              AES --> PL["🏛️ Portal Lock\nWrapped by portal keypair\nPortal can revoke this copy"]
-              AES --> OL["👤 Owner Lock\nWrapped by owner keypair\nSurvives portal shutdown"]
-              AES --> LL["🔗 Link Lock\nEmbedded in share URL\nURL logs = key exposure"]
+              AES["AES File Key\nEncrypts the file contents"]
+              AES --> PL["Portal Lock\nWrapped by portal keypair\nPortal can revoke this copy"]
+              AES --> OL["Owner Lock\nWrapped by owner keypair\nSurvives portal shutdown"]
+              AES --> LL["Link Lock\nEmbedded in share URL\nURL logs = key exposure"]
               style AES fill:#0471a9,color:#fff,stroke:#023750
               style LL fill:#fef3c7,stroke:#d97706,color:#78350f
           </div>
