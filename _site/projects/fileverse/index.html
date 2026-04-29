@@ -492,7 +492,7 @@
           <h3 class="mb-1" style="font-family:'Geist Mono',monospace;color:var(--accent);font-size:1.1rem;font-weight:600;">Positioning Map</h3>
           <p class="text-sm mb-4" style="color:var(--muted)">Peers plotted by decentralization level (x-axis) and collaboration maturity (y-axis). Scores derived from the comparison matrix below.</p>
           <div style="position:relative;height:380px;">
-            <canvas id="landscapeChart"></canvas>
+            <canvas id="landscapeChart" role="img" aria-label="Scatter chart positioning Fileverse and eight peers by decentralization (x-axis) and collaboration maturity (y-axis). Fileverse scores highest in decentralization at 9/10."></canvas>
           </div>
         </div>
 
@@ -583,7 +583,7 @@
           Low (25K registered, 2% conversion): MRR $3.7K vs. infra $3.15K. Medium (200K, 4%): MRR $70.4K vs. infra $60K. Scale (1.5M, 6%): MRR $918K vs. post-discount infra $550K. Engineering load is held at $120K/month across all scenarios.
         </figcaption>
         <div style="position: relative; height: 320px;">
-          <canvas id="econChart"></canvas>
+          <canvas id="econChart" role="img" aria-label="Grouped bar chart comparing MRR, infrastructure costs, and engineering load across three scale scenarios. Break-even occurs near the Scale scenario at ~100K paying users."></canvas>
         </div>
       </figure>
 
@@ -935,28 +935,85 @@
     var lCanvas = document.getElementById('landscapeChart');
     if (lCanvas && typeof Chart !== 'undefined') {
       var peers = [
-        { label: 'Fileverse',       x: 9,   y: 6,   lx: -8,  ly: -14 },
-        { label: 'CryptPad',        x: 8,   y: 7,   lx: 10,  ly: -10 },
-        { label: 'Standard Notes',  x: 6,   y: 3,   lx: 10,  ly: -10 },
-        { label: 'Anytype',         x: 5.3, y: 4.7, lx: 10,  ly:  12 },
-        { label: 'Proton Drive',    x: 4,   y: 5.3, lx: 10,  ly: -10 },
-        { label: 'AFFiNE',          x: 4.8, y: 6.2, lx: -52, ly: -10 },
-        { label: 'Notion',          x: 1,   y: 9,   lx: 10,  ly: -10 },
-        { label: 'Google Docs',     x: 1,   y: 10,  lx: 10,  ly: -10 },
-        { label: 'Skiff (defunct)', x: 5.2, y: 5.8, lx: 10,  ly:  12 }
+        { label: 'Fileverse',       x: 9,   y: 6,   lx: -8,  ly: -14, defunct: false },
+        { label: 'CryptPad',        x: 8,   y: 7,   lx: 10,  ly: -10, defunct: false },
+        { label: 'Standard Notes',  x: 6,   y: 3,   lx: 10,  ly: -10, defunct: false },
+        { label: 'Anytype',         x: 5.3, y: 4.7, lx: 10,  ly:  12, defunct: false },
+        { label: 'Proton Drive',    x: 4,   y: 5.3, lx: 10,  ly: -10, defunct: false },
+        { label: 'AFFiNE',          x: 4.8, y: 6.2, lx: -52, ly: -10, defunct: false },
+        { label: 'Notion',          x: 1,   y: 9,   lx: 10,  ly: -10, defunct: false },
+        { label: 'Google Docs',     x: 1,   y: 10,  lx: 10,  ly: -10, defunct: false },
+        { label: 'Skiff (defunct)', x: 5.2, y: 5.8, lx: 10,  ly:  12, defunct: true  }
       ];
+
+      // Plugin: quadrant lines + persistent labels (afterDraw fires on every render including tooltip hover)
+      var landscapeLabelPlugin = {
+        id: 'landscapeLabels',
+        afterDraw: function(chart) {
+          var c = chart.ctx;
+          var xScale = chart.scales.x;
+          var yScale = chart.scales.y;
+          var midX = xScale.getPixelForValue(5.5);
+          var midY = yScale.getPixelForValue(5.5);
+
+          // Quadrant dividers
+          c.save();
+          c.strokeStyle = 'rgba(4,113,169,0.12)';
+          c.lineWidth = 1;
+          c.setLineDash([4, 4]);
+          c.beginPath();
+          c.moveTo(midX, chart.chartArea.top);
+          c.lineTo(midX, chart.chartArea.bottom);
+          c.stroke();
+          c.beginPath();
+          c.moveTo(chart.chartArea.left, midY);
+          c.lineTo(chart.chartArea.right, midY);
+          c.stroke();
+          c.setLineDash([]);
+
+          // Quadrant labels
+          c.font = '500 10px "Geist Mono", monospace';
+          c.fillStyle = 'rgba(4,113,169,0.35)';
+          c.textAlign = 'left';
+          c.fillText('Centralized · Mature', chart.chartArea.left + 6, chart.chartArea.top + 14);
+          c.textAlign = 'right';
+          c.fillText('Decentralized · Mature', chart.chartArea.right - 6, chart.chartArea.top + 14);
+          c.textAlign = 'left';
+          c.fillText('Centralized · Early', chart.chartArea.left + 6, chart.chartArea.bottom - 6);
+          c.textAlign = 'right';
+          c.fillText('Decentralized · Early', chart.chartArea.right - 6, chart.chartArea.bottom - 6);
+
+          // Point labels
+          c.textAlign = 'left';
+          var meta = chart.getDatasetMeta(0);
+          peers.forEach(function(peer, i) {
+            var pt = meta.data[i];
+            c.font = '600 11px "Geist Mono", monospace';
+            c.fillStyle = peer.defunct ? 'rgba(100,116,139,0.7)' : '#023750';
+            c.fillText(peer.label, pt.x + peer.lx, pt.y + peer.ly);
+          });
+          c.restore();
+        }
+      };
+
       new Chart(lCanvas.getContext('2d'), {
         type: 'scatter',
+        plugins: [landscapeLabelPlugin],
         data: {
           datasets: [{
             label: 'Peers',
             data: peers.map(function(p){ return { x: p.x, y: p.y }; }),
             backgroundColor: peers.map(function(p){
-              return p.label === 'Fileverse' ? 'rgba(4,113,169,0.9)' : 'rgba(4,113,169,0.25)';
+              if (p.label === 'Fileverse') return 'rgba(4,113,169,0.9)';
+              if (p.defunct) return 'rgba(100,116,139,0.2)';
+              return 'rgba(4,113,169,0.25)';
             }),
             borderColor: peers.map(function(p){
-              return p.label === 'Fileverse' ? '#0471a9' : 'rgba(4,113,169,0.5)';
+              if (p.label === 'Fileverse') return '#0471a9';
+              if (p.defunct) return 'rgba(100,116,139,0.5)';
+              return 'rgba(4,113,169,0.5)';
             }),
+            pointStyle: peers.map(function(p){ return p.defunct ? 'crossRot' : 'circle'; }),
             pointRadius: peers.map(function(p){ return p.label === 'Fileverse' ? 10 : 7; }),
             pointHoverRadius: 12,
             borderWidth: 2
@@ -965,6 +1022,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          animation: false,
           scales: {
             x: {
               min: 0, max: 11,
@@ -986,23 +1044,6 @@
                   return peers[idx].label + ' — Decentralization: ' + peers[idx].x + '/10, Collaboration: ' + peers[idx].y + '/10';
                 }
               }
-            }
-          },
-          animation: {
-            onComplete: function() {
-              var chart = this;
-              var c = chart.ctx;
-              c.save();
-              c.font = '600 11px "Geist Mono", monospace';
-              c.fillStyle = '#023750';
-              chart.data.datasets[0].data.forEach(function(point, i) {
-                var meta = chart.getDatasetMeta(0);
-                var pt = meta.data[i];
-                var xOff = peers[i].lx;
-                var yOff = peers[i].ly;
-                c.fillText(peers[i].label, pt.x + xOff, pt.y + yOff);
-              });
-              c.restore();
             }
           }
         }
