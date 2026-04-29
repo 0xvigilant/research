@@ -354,6 +354,7 @@
         <p>Fileverse is an open-source, end-to-end encrypted productivity suite that combines a local-first collaborative document editor (dDocs), an onchain-aware spreadsheet (dSheets), and a multi-provider IPFS persistence layer with an Ethereum/Gnosis content registry. Files are encrypted client-side with per-file AES keys; those keys are wrapped under three independent locks — Portal, Owner, and Link — described in the project's walk-away repository<a class="cite" href="#ref-1">[1]</a>, enabling operator-independent recovery.</p>
         <p>Real-time collaboration runs through a stateless WebSocket relay<a class="cite" href="#ref-2">[2]</a> that handles only ciphertext, while persistence is mediated by <code>fileverse-storage-v2</code>, which fans out pin requests across Pinata, Filebase, and Web3.Storage / Storacha<a class="cite" href="#ref-3">[3]</a> under UCAN-gated authorization. The codebase is licensed AGPL-3.0 across the client editor and dSheets<a class="cite" href="#ref-4">[4]</a>, and no native token, fee schedule, or venture round is currently disclosed on fileverse.io<a class="cite" href="#ref-5">[5]</a>.</p>
         <p>We find the project's distinguishing properties relative to peers are decentralization-by-default of persistence, AGPL-licensed walk-away portability, and onchain-aware spreadsheet primitives; its principal vulnerabilities are an undisclosed funding path, a partially audited cryptographic stack, and Link Lock URL-fragment leakage. This report applies competitive, technical, and economic frameworks to assess where the design is load-bearing and where it is fragile.</p>
+        <p><strong>Analytical position:</strong> Fileverse occupies a structurally defensible position at the intersection of E2EE productivity and onchain primitives — a niche with no direct equivalent among peers as of the data cutoff. Economic viability at current pricing requires a user base roughly an order of magnitude beyond comparable open-source precedents; the conditions that would change this assessment are documented in §7.</p>
         <p><strong>Data cutoff date: 2026-04-27.</strong></p>
       </article>
     </section>
@@ -934,15 +935,15 @@
     var lCanvas = document.getElementById('landscapeChart');
     if (lCanvas && typeof Chart !== 'undefined') {
       var peers = [
-        { label: 'Fileverse',       x: 9, y: 6 },
-        { label: 'CryptPad',        x: 8, y: 7 },
-        { label: 'Standard Notes',  x: 6, y: 3 },
-        { label: 'Anytype',         x: 5, y: 5 },
-        { label: 'Proton Drive',    x: 4, y: 5 },
-        { label: 'AFFiNE',          x: 5, y: 6 },
-        { label: 'Notion',          x: 1, y: 9 },
-        { label: 'Google Docs',     x: 1, y: 10 },
-        { label: 'Skiff (defunct)', x: 5, y: 6 }
+        { label: 'Fileverse',       x: 9,   y: 6,   lx: -8,  ly: -14 },
+        { label: 'CryptPad',        x: 8,   y: 7,   lx: 10,  ly: -10 },
+        { label: 'Standard Notes',  x: 6,   y: 3,   lx: 10,  ly: -10 },
+        { label: 'Anytype',         x: 5.3, y: 4.7, lx: 10,  ly:  12 },
+        { label: 'Proton Drive',    x: 4,   y: 5.3, lx: 10,  ly: -10 },
+        { label: 'AFFiNE',          x: 4.8, y: 6.2, lx: -52, ly: -10 },
+        { label: 'Notion',          x: 1,   y: 9,   lx: 10,  ly: -10 },
+        { label: 'Google Docs',     x: 1,   y: 10,  lx: 10,  ly: -10 },
+        { label: 'Skiff (defunct)', x: 5.2, y: 5.8, lx: 10,  ly:  12 }
       ];
       new Chart(lCanvas.getContext('2d'), {
         type: 'scatter',
@@ -997,8 +998,8 @@
               chart.data.datasets[0].data.forEach(function(point, i) {
                 var meta = chart.getDatasetMeta(0);
                 var pt = meta.data[i];
-                var xOff = peers[i].label === 'Fileverse' ? -8 : 10;
-                var yOff = peers[i].label === 'Fileverse' ? -14 : -10;
+                var xOff = peers[i].lx;
+                var yOff = peers[i].ly;
                 c.fillText(peers[i].label, pt.x + xOff, pt.y + yOff);
               });
               c.restore();
