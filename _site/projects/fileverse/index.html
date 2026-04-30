@@ -14,13 +14,13 @@
   startOnLoad: true,
   theme: 'base',
   themeVariables: {
-    primaryColor: '#dceefa',
-    primaryTextColor: '#023750',
-    primaryBorderColor: '#0471a9',
-    secondaryColor: '#cce6f5',
-    tertiaryColor: '#edf6fc',
-    lineColor: '#0471a9',
-    edgeLabelBackground: '#f8f9fa',
+    primaryColor: '#f0f0f0',
+    primaryTextColor: '#0a0a0a',
+    primaryBorderColor: '#0a0a0a',
+    secondaryColor: '#e8e8e8',
+    tertiaryColor: '#dedede',
+    lineColor: '#0a0a0a',
+    edgeLabelBackground: '#fafafa',
     fontSize: '14px'
   }
 });</script>
@@ -483,8 +483,8 @@
               D --> E["Content Hash\nCID"]
               E --> F["Gnosis Chain\nContent Registry"]
               F --> G["Permanent\nContent Address"]
-              style A fill:#eef2f5,stroke:#0471a9,color:#023750
-              style G fill:#eef2f5,stroke:#0471a9,color:#023750
+              style A fill:#f0f0f0,stroke:#0a0a0a,color:#0a0a0a
+              style G fill:#f0f0f0,stroke:#0a0a0a,color:#0a0a0a
           </div>
           <figcaption class="text-xs mt-2 text-center" style="color:var(--muted)">Figure 2 — File lifecycle from browser to permanent content address. Encryption happens client-side; no plaintext leaves the browser.</figcaption>
         </figure>
@@ -510,10 +510,10 @@
               AES --> PL["Portal Lock\nWrapped by portal keypair\nPortal can revoke this copy"]
               AES --> OL["Owner Lock\nWrapped by owner keypair\nSurvives portal shutdown"]
               AES --> LL["Link Lock\nEmbedded in share URL\nURL logs = key exposure"]
-              style AES fill:#0471a9,color:#fff,stroke:#023750
-              style LL fill:#fef3c7,stroke:#d97706,color:#78350f
+              style AES fill:#0a0a0a,color:#fafafa,stroke:#0a0a0a
+              style LL fill:#bfbfbf,stroke:#0a0a0a,color:#0a0a0a
           </div>
-          <figcaption class="text-xs mt-2 text-center" style="color:var(--muted)">Figure 3 — Three-lock key model. Each lock is an independent encryption of the same AES key. The Link Lock (amber) embeds the key in the share URL.</figcaption>
+          <figcaption class="text-xs mt-2 text-center" style="color:var(--muted)">Figure 3 — Three-lock key model. Each lock is an independent encryption of the same AES key. The Link Lock (highlighted) embeds the key in the share URL.</figcaption>
         </figure>
         <p>Failure modes at settlement are bounded but real. If all three IPFS providers are unreachable, the Pinata to Filebase to Web3.Storage fallback chain<a class="cite" href="#ref-3">[3]</a> has no further escape, and a self-hosted IPFS pin is the only out. If a registry update fails after a successful pin, readers see the previous version until idempotent retry succeeds. Concurrent on-chain updates resolve by last-writer-wins at the EVM level; the CRDT history on IPFS may diverge from the registry pointer until reconciled.</p>
 
@@ -913,14 +913,14 @@
       c.save();
       c.beginPath();
       c.setLineDash([8, 4]);
-      c.strokeStyle = '#d97706';
+      c.strokeStyle = '#0a0a0a';
       c.lineWidth = 2;
       c.moveTo(chart.chartArea.left, yPixel);
       c.lineTo(chart.chartArea.right, yPixel);
       c.stroke();
       c.setLineDash([]);
       c.font = '600 11px "Geist Mono", monospace';
-      c.fillStyle = '#d97706';
+      c.fillStyle = '#0a0a0a';
       c.fillText('Break-even (~100K paying users) ≈ $670K/mo', chart.chartArea.left + 6, yPixel - 6);
       c.restore();
     }
@@ -939,22 +939,22 @@
           {
             label: 'MRR (USD/mo)',
             data: [3700, 70400, 918000],
-            backgroundColor: 'rgba(4, 113, 169, 0.78)',
-            borderColor: 'rgba(4, 113, 169, 1)',
+            backgroundColor: 'rgba(10, 10, 10, 0.82)',
+            borderColor: 'rgba(10, 10, 10, 1)',
             borderWidth: 1
           },
           {
             label: 'Infra COGS (post-discount)',
             data: [3150, 60000, 550000],
-            backgroundColor: 'rgba(209, 108, 50, 0.78)',
-            borderColor: 'rgba(180, 90, 20, 1)',
+            backgroundColor: 'rgba(120, 120, 120, 0.78)',
+            borderColor: 'rgba(80, 80, 80, 1)',
             borderWidth: 1
           },
           {
             label: 'Engineering load (held)',
             data: [120000, 120000, 120000],
-            backgroundColor: 'rgba(100, 116, 139, 0.55)',
-            borderColor: 'rgba(51, 65, 85, 1)',
+            backgroundColor: 'rgba(190, 190, 190, 0.6)',
+            borderColor: 'rgba(150, 150, 150, 1)',
             borderWidth: 1
           }
         ]
@@ -966,18 +966,29 @@
           y: {
             type: 'logarithmic',
             ticks: {
+              color: '#3a3a3a',
               callback: function(v){
                 if (v >= 1000000) return '$' + (v/1000000) + 'M';
                 if (v >= 1000) return '$' + (v/1000) + 'K';
                 return '$' + v;
               }
             },
-            title: { display: true, text: 'USD per month (log scale)' }
+            grid: { color: 'rgba(0, 0, 0, 0.08)' },
+            title: { display: true, text: 'USD per month (log scale)', color: '#0a0a0a', font: { weight: '600' } }
+          },
+          x: {
+            ticks: { color: '#3a3a3a' },
+            grid: { color: 'rgba(0, 0, 0, 0.06)' }
           }
         },
         plugins: {
-          legend: { position: 'bottom' },
+          legend: { position: 'bottom', labels: { color: '#0a0a0a' } },
           tooltip: {
+            backgroundColor: '#0a0a0a',
+            titleColor: '#fafafa',
+            bodyColor: '#fafafa',
+            borderColor: '#0a0a0a',
+            borderWidth: 1,
             callbacks: {
               label: function(ctx){
                 return ctx.dataset.label + ': $' + ctx.parsed.y.toLocaleString();
@@ -1015,7 +1026,7 @@
 
           // Quadrant dividers
           c.save();
-          c.strokeStyle = 'rgba(4,113,169,0.12)';
+          c.strokeStyle = 'rgba(0,0,0,0.18)';
           c.lineWidth = 1;
           c.setLineDash([4, 4]);
           c.beginPath();
@@ -1030,7 +1041,7 @@
 
           // Quadrant labels
           c.font = '500 10px "Geist Mono", monospace';
-          c.fillStyle = 'rgba(4,113,169,0.35)';
+          c.fillStyle = 'rgba(0,0,0,0.45)';
           c.textAlign = 'left';
           c.fillText('Centralized · Mature', chart.chartArea.left + 6, chart.chartArea.top + 14);
           c.textAlign = 'right';
@@ -1046,7 +1057,7 @@
           peers.forEach(function(peer, i) {
             var pt = meta.data[i];
             c.font = '600 11px "Geist Mono", monospace';
-            c.fillStyle = peer.defunct ? 'rgba(100,116,139,0.7)' : '#023750';
+            c.fillStyle = peer.defunct ? 'rgba(140,140,140,0.85)' : '#0a0a0a';
             c.fillText(peer.label, pt.x + peer.lx, pt.y + peer.ly);
           });
           c.restore();
@@ -1061,14 +1072,14 @@
             label: 'Peers',
             data: peers.map(function(p){ return { x: p.x, y: p.y }; }),
             backgroundColor: peers.map(function(p){
-              if (p.label === 'Fileverse') return 'rgba(4,113,169,0.9)';
-              if (p.defunct) return 'rgba(100,116,139,0.2)';
-              return 'rgba(4,113,169,0.25)';
+              if (p.label === 'Fileverse') return 'rgba(10,10,10,0.92)';
+              if (p.defunct) return 'rgba(160,160,160,0.25)';
+              return 'rgba(10,10,10,0.30)';
             }),
             borderColor: peers.map(function(p){
-              if (p.label === 'Fileverse') return '#0471a9';
-              if (p.defunct) return 'rgba(100,116,139,0.5)';
-              return 'rgba(4,113,169,0.5)';
+              if (p.label === 'Fileverse') return '#0a0a0a';
+              if (p.defunct) return 'rgba(140,140,140,0.6)';
+              return 'rgba(10,10,10,0.55)';
             }),
             pointStyle: peers.map(function(p){ return p.defunct ? 'crossRot' : 'circle'; }),
             pointRadius: peers.map(function(p){ return p.label === 'Fileverse' ? 10 : 7; }),
@@ -1083,18 +1094,25 @@
           scales: {
             x: {
               min: 0, max: 11,
-              title: { display: true, text: 'Decentralization →', color: '#023750', font: { weight: '600' } },
-              grid: { color: 'rgba(4,113,169,0.08)' }
+              title: { display: true, text: 'Decentralization →', color: '#0a0a0a', font: { weight: '600' } },
+              ticks: { color: '#3a3a3a' },
+              grid: { color: 'rgba(0,0,0,0.08)' }
             },
             y: {
               min: 0, max: 11,
-              title: { display: true, text: 'Collaboration Maturity →', color: '#023750', font: { weight: '600' } },
-              grid: { color: 'rgba(4,113,169,0.08)' }
+              title: { display: true, text: 'Collaboration Maturity →', color: '#0a0a0a', font: { weight: '600' } },
+              ticks: { color: '#3a3a3a' },
+              grid: { color: 'rgba(0,0,0,0.08)' }
             }
           },
           plugins: {
             legend: { display: false },
             tooltip: {
+              backgroundColor: '#0a0a0a',
+              titleColor: '#fafafa',
+              bodyColor: '#fafafa',
+              borderColor: '#0a0a0a',
+              borderWidth: 1,
               callbacks: {
                 label: function(ctx) {
                   var idx = ctx.dataIndex;
