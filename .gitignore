@@ -7,3 +7,4 @@ __pycache__/
 
 # Meta planning/spec docs — kept local, not published
 docs/superpowers/
+.superpowers/
