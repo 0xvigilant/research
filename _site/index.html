@@ -228,6 +228,7 @@
         Each report includes a methodology page documenting sources consulted, frameworks applied, limitations, and disclosures (including data cutoff and any positions held). Reports also include a "What would change our view" subsection that names observable, falsifiable conditions under which the thesis would be revised.
       </p>
     </div>
+    <div id="about-shape" style="width:120px;height:120px;margin-top:1.5rem;"></div>
   </section>
 
 </main>
@@ -241,5 +242,34 @@
   </div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  (function () {
+    var container = document.getElementById('about-shape');
+    if (!container || typeof THREE === 'undefined') return;
+    var size = 120;
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(size, size);
+    renderer.setClearColor(0x000000, 0);
+    container.appendChild(renderer.domElement);
+
+    var geometry = new THREE.OctahedronGeometry(1.1, 0);
+    var edges = new THREE.EdgesGeometry(geometry);
+    var material = new THREE.LineBasicMaterial({ color: 0x0a0a0a, linewidth: 1 });
+    var shape = new THREE.LineSegments(edges, material);
+    scene.add(shape);
+    camera.position.z = 3;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      shape.rotation.x += 0.005;
+      shape.rotation.y += 0.007;
+      renderer.render(scene, camera);
+    }
+    animate();
+  })();
+</script>
 </body>
 </html>
