@@ -255,10 +255,10 @@
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
-    var geometry = new THREE.TorusKnotGeometry(0.7, 0.22, 80, 12);
-    var wireframe = new THREE.WireframeGeometry(geometry);
-    var material = new THREE.LineBasicMaterial({ color: 0x0a0a0a, linewidth: 1, transparent: true, opacity: 0.9 });
-    var shape = new THREE.LineSegments(wireframe, material);
+    var geometry = new THREE.IcosahedronGeometry(1.2, 0);
+    var edges = new THREE.EdgesGeometry(geometry);
+    var material = new THREE.LineBasicMaterial({ color: 0x0a0a0a, linewidth: 1 });
+    var shape = new THREE.LineSegments(edges, material);
     scene.add(shape);
     camera.position.z = 3;
 
